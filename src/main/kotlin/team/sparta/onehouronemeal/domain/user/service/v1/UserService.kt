@@ -4,6 +4,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
+import team.sparta.onehouronemeal.domain.user.model.v1.Profile
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserJpaRepository
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
@@ -19,7 +20,7 @@ class UserService(
             User(
                 username = "test",
                 password = "12345678",
-                nickname = "testNickname",
+                profile = Profile(nickname = "testNickname"),
             )
         )
 
