@@ -1,3 +1,6 @@
 package team.sparta.onehouronemeal.domain.recipe.repository.v1
 
-class RecipeRepositoryImpl : RecipeRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+class RecipeRepositoryImpl : CustomRecipeRepository

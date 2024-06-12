@@ -49,7 +49,7 @@ class RecipeController(
     }
 
     @DeleteMapping("/{recipeId}")
-    fun deleteRecipe(@PathVariable courseId: Long, @PathVariable recipeId: Long): ResponseEntity<Void> {
+    fun deleteRecipe(@PathVariable courseId: Long, @PathVariable recipeId: Long): ResponseEntity<Unit> {
         recipeService.deleteRecipe(courseId, recipeId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
