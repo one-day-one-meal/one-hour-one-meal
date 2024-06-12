@@ -17,7 +17,7 @@ import team.sparta.onehouronemeal.domain.comment.dto.v1.UpdateCommentRequest
 import team.sparta.onehouronemeal.domain.comment.service.v1.CommentService
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
-@RequestMapping("/api/v1/courses/{courseId}/comments}")
+@RequestMapping("/api/v1/courses/{courseId}/comments")
 @RestController
 class CommentController(private val commentService: CommentService) {
 
@@ -31,7 +31,7 @@ class CommentController(private val commentService: CommentService) {
         @PathVariable courseId: Long,
         @RequestBody request: CreateCommentRequest
     ): ResponseEntity<CommentResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(commentId, request))
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(courseId, request))
     }
 
     @PutMapping("/{commentId}")
@@ -55,7 +55,7 @@ class CommentController(private val commentService: CommentService) {
     fun reportComment(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable commentId: Long
-    ): ResponseEntity<Boolean> {
+    ): ResponseEntity<Unit> {
         return ResponseEntity.ok(commentService.reportComment(principal, commentId))
     }
 }
