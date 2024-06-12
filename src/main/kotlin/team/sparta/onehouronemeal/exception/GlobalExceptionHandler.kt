@@ -25,7 +25,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException::class)
-    fun handleIllegalArgumentException(e: RuntimeException): ResponseEntity<ErrorDto> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDto(e.message, "400"))
+    fun handleRuntimeException(e: RuntimeException): ResponseEntity<ErrorDto> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDto(e.message, "500"))
     }
 }
