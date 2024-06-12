@@ -10,6 +10,7 @@ import team.sparta.onehouronemeal.domain.course.model.v1.Course
 import team.sparta.onehouronemeal.domain.course.model.v1.CourseStatus
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
+import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
@@ -22,7 +23,7 @@ class CourseService(
     fun getCourseList(): List<CourseResponse> {
         val courseList = courseRepository.findAllByStatusIsOrderByCreatedAtDesc(CourseStatus.OPEN)
 
-        return courseList.map { CourseResponse.from(it, it.user.profile.nickname) }
+        return courseList.map { CourseResponse.from(it) }
     }
 
     fun getCourseByFollowedChef(principal: UserPrincipal): List<CourseResponse> {
@@ -36,10 +37,9 @@ class CourseService(
     fun getCourse(courseId: Long): CourseResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        // 예외 추후에 수정 필요
-        if (!course.isOpened()) throw RuntimeException("Course Is Not Opened")
+        if (!course.isOpened()) throw IllegalStateException("Course Is Not Opened")
 
-        return CourseResponse.from(course, course.user.profile.nickname)
+        return CourseResponse.from(course)
     }
 
     fun createCourse(principal: UserPrincipal, request: CreateCourseRequest): CourseResponse {
@@ -49,31 +49,29 @@ class CourseService(
             title = request.title, describe = request.describe, user = user
         )
 
-        return CourseResponse.from(courseRepository.save(course), course.user.profile.nickname)
+        return CourseResponse.from(courseRepository.save(course))
     }
 
     @Transactional
     fun updateCourse(principal: UserPrincipal, courseId: Long, request: UpdateCourseRequest): CourseResponse {
-        if(!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
+        if (!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
 
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        // 예외 추후에 수정 필요
-        if (course.user.id != principal.id) throw IllegalStateException("Unauthorized")
+        if (course.user.id != principal.id) throw AccessDeniedException("You do not own this course")
 
         course.updateCourse(request.title, request.describe)
 
-        return CourseResponse.from(course, course.user.profile.nickname)
+        return CourseResponse.from(course)
     }
 
     @Transactional
     fun deleteCourse(principal: UserPrincipal, courseId: Long) {
-        if(!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
+        if (!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
 
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        // 예외 추후에 수정 필요
-        if (course.user.id != principal.id) throw IllegalStateException("Unauthorized")
+        if (course.user.id != principal.id) throw AccessDeniedException("You do not own this course")
 
         courseRepository.delete(course)
     }

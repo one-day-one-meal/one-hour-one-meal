@@ -1,11 +1,12 @@
 package team.sparta.onehouronemeal.domain.course.dto.v1
 
 import team.sparta.onehouronemeal.domain.course.model.v1.Course
+import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import java.time.LocalDateTime
 
 data class CourseResponse(
     val id: Long,
-    val nickname: String,
+    val user: UserResponse,
     val title: String,
     val describe: String,
     val status: String,
@@ -13,10 +14,10 @@ data class CourseResponse(
     val updatedAt: LocalDateTime?
 ) {
     companion object {
-        fun from(course: Course, nickname: String): CourseResponse {
+        fun from(course: Course): CourseResponse {
             return CourseResponse(
                 id = course.id!!,
-                nickname = nickname,
+                user = UserResponse.from(course.user),
                 title = course.title,
                 describe = course.describe,
                 status = course.status.name,

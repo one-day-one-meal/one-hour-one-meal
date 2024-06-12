@@ -31,7 +31,7 @@ class Course(
 ) : BaseTimeEntity() {
     fun isOpened() = status == CourseStatus.OPEN
 
-    fun updateCourse(title: String, description: String) {
+    fun updateCourse(title: String, describe: String) {
         this.title = title
         this.describe = describe
     }
