@@ -45,4 +45,8 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    fun updateProfile(profile: Profile) {
+        this.profile = profile
+    }
 }
