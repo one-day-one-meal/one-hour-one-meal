@@ -1,11 +1,16 @@
 package team.sparta.onehouronemeal.domain.course.service.v1
 
+import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
 import team.sparta.onehouronemeal.domain.course.dto.v1.CreateCourseRequest
 import team.sparta.onehouronemeal.domain.course.dto.v1.UpdateCourseRequest
+import team.sparta.onehouronemeal.domain.course.model.v1.Course
+import team.sparta.onehouronemeal.domain.course.model.v1.CourseStatus
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
+import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
 @Service
@@ -13,11 +18,11 @@ class CourseService(
     private val courseRepository: CourseRepository, private val userRepository: UserRepository
 ) {
 
+    @Transactional
     fun getCourseList(): List<CourseResponse> {
-        // 모든 코스 목록을 조회
+        val courseList = courseRepository.findAllByStatusIsOrderByCreatedAtDesc(CourseStatus.OPEN)
 
-        // 코스 목록 중에 OPEN 인 것만 CourseResponse 로 변환에서 반환
-        TODO()
+        return courseList.map { CourseResponse.from(it, it.user.profile.nickname) }
     }
 
     fun getCourseByFollowedChef(principal: UserPrincipal): List<CourseResponse> {
@@ -27,35 +32,50 @@ class CourseService(
         TODO()
     }
 
+    @Transactional
     fun getCourse(courseId: Long): CourseResponse {
-        // 코스 아이디를 가지고 Course 를 조회
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        // 코스가 OPEN 인 경우에만 CourseResponse 로 변환하여 반환(?)
-        TODO()
+        // 예외 추후에 수정 필요
+        if (!course.isOpened()) throw RuntimeException("Course Is Not Opened")
+
+        return CourseResponse.from(course, course.user.profile.nickname)
     }
 
     fun createCourse(principal: UserPrincipal, request: CreateCourseRequest): CourseResponse {
-        // UserRepository 에서 user 조회
+        val user = userRepository.findById(principal.id) ?: throw ModelNotFoundException("User", principal.id)
 
-        // CreateCourseRequest 로 Course 생성 후 저장
+        val course = Course(
+            title = request.title, describe = request.describe, user = user
+        )
 
-        TODO()
+        return CourseResponse.from(courseRepository.save(course), course.user.profile.nickname)
     }
 
+    @Transactional
     fun updateCourse(principal: UserPrincipal, courseId: Long, request: UpdateCourseRequest): CourseResponse {
-        // User 본인 확인
+        if(!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
 
-        // Course 조회 후 값 변경
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        TODO()
+        // 예외 추후에 수정 필요
+        if (course.user.id != principal.id) throw IllegalStateException("Unauthorized")
+
+        course.updateCourse(request.title, request.describe)
+
+        return CourseResponse.from(course, course.user.profile.nickname)
     }
 
+    @Transactional
     fun deleteCourse(principal: UserPrincipal, courseId: Long) {
-        // User 본인 확인
+        if(!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
 
-        // Course 삭제
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        TODO()
+        // 예외 추후에 수정 필요
+        if (course.user.id != principal.id) throw IllegalStateException("Unauthorized")
+
+        courseRepository.delete(course)
     }
 
     fun likeCourse(principal: UserPrincipal, courseId: Long) {

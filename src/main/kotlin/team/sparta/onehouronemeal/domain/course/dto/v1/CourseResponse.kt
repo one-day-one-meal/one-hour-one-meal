@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class CourseResponse(
     val id: Long,
-    val chefId: Long,
+    val nickname: String,
     val title: String,
     val describe: String,
     val status: String,
@@ -13,10 +13,10 @@ data class CourseResponse(
     val updatedAt: LocalDateTime?
 ) {
     companion object {
-        fun from(course: Course): CourseResponse {
+        fun from(course: Course, nickname: String): CourseResponse {
             return CourseResponse(
                 id = course.id!!,
-                chefId = course.user.id!!,
+                nickname = nickname,
                 title = course.title,
                 describe = course.describe,
                 status = course.status.name,
