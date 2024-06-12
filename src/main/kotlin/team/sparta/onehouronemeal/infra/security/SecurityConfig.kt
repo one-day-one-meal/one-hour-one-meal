@@ -25,6 +25,7 @@ class SecurityConfig(
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
             .csrf { it.disable() }
+            .headers { header -> header.frameOptions { it.disable() } }
             .authorizeHttpRequests {
                 it.requestMatchers(
                     // 인증 대상에서 제외할 URL 설정
@@ -34,9 +35,6 @@ class SecurityConfig(
                 ).permitAll()
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
-            }
-            .headers { header ->
-                header.frameOptions { it.disable() }
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntrypoint) }
