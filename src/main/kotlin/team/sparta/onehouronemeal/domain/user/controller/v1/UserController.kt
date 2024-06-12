@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponseDto
-import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckDto
+import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
 import team.sparta.onehouronemeal.domain.user.service.v1.UserService
 
 @RestController
@@ -16,15 +16,15 @@ class UserController(
 ) {
 
     @GetMapping("/auth/token-test-generate")
-    fun tokenTestGenerate(): ResponseEntity<SignInResponseDto> {
+    fun tokenTestGenerate(): ResponseEntity<SignInResponse> {
         return ResponseEntity.ok(userService.tokenTestGenerate())
     }
 
     @GetMapping("/auth/token-check")
-    fun tokenTestCheck(httpServlet: HttpServletRequest): ResponseEntity<TokenCheckDto> {
+    fun tokenTestCheck(httpServlet: HttpServletRequest): ResponseEntity<TokenCheckResponse> {
         val accessToken = httpServlet.getHeader("Authorization")
             ?: throw IllegalArgumentException("Authorization header is required")
-        
+
         return ResponseEntity.ok(userService.tokenTestCheck(accessToken))
     }
 }
