@@ -33,10 +33,9 @@ fun deleteComment(principal: UserPrincipal, commentId: Long) {
     TODO()
 }
 
-fun reportComment(principal: UserPrincipal, commentId: Long): Boolean {
+fun reportComment(principal: UserPrincipal, commentId: Long) {
     // User 본인 확인
     // 코멘트 아이디를 가지고 코멘트 신고
-    // 반환타입 불리언?
 
     // 본인 댓글에 신고 안됨
 
