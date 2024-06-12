@@ -14,7 +14,7 @@ data class SignUpRequest(
     companion object {
         fun to(encoder: PasswordEncoder, role: String, request: SignUpRequest): User {
             val actualRole = UserRole.valueOf(role)
-            val status = if (actualRole == UserRole.CHEF) UserStatus.PENDING else UserStatus.ALIVE
+            val status = if (actualRole == UserRole.CHEF) UserStatus.PENDING else UserStatus.ACTIVE
 
             return User(
                 username = request.username,

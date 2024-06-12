@@ -32,7 +32,7 @@ class User(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    var status: UserStatus = UserStatus.ALIVE,
+    var status: UserStatus = UserStatus.ACTIVE,
 
     @Column(name = "provider")
     @Size(max = 20)
