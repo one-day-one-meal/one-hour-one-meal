@@ -11,4 +11,16 @@ class UserRepositoryImpl(
     override fun findById(id: Long): User? {
         return userJpaRepository.findByIdOrNull(id)
     }
+
+    override fun findByUsername(username: String): User? {
+        return userJpaRepository.findByUsername(username)
+    }
+
+    override fun save(user: User): User {
+        return userJpaRepository.save(user)
+    }
+
+    override fun delete(user: User) {
+        userJpaRepository.delete(user)
+    }
 }
