@@ -32,6 +32,7 @@ class SecurityConfig(
                     "/api/v1/auth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
+                    "/error",
                 ).permitAll()
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
