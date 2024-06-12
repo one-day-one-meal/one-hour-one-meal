@@ -17,7 +17,6 @@ import team.sparta.onehouronemeal.domain.user.repository.v1.UserJpaRepository
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
-import team.sparta.onehouronemeal.infra.security.jwt.SecurityUtils
 
 @Service
 class UserService(
@@ -73,9 +72,9 @@ class UserService(
         return SignInResponse.from(jwtPlugin = jwtPlugin, user = testUser)
     }
 
-    fun tokenTestCheck(accessToken: String): TokenCheckResponse {
-        val userId = SecurityUtils.getCurrentUserIdOrNull() ?: throw IllegalStateException("Unauthorized")
-        val role = SecurityUtils.getCurrentUserRole()
+    fun tokenTestCheck(accessToken: String, principal: UserPrincipal): TokenCheckResponse {
+        val userId = principal.id
+        val role = principal.authorities.firstOrNull()?.authority ?: "ROLE_ANONYMOUS"
 
         return TokenCheckResponse.from(userId, role)
     }

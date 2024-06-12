@@ -65,10 +65,14 @@ class UserController(
     }
 
     @GetMapping("/auth/token-check")
-    fun tokenTestCheck(httpServlet: HttpServletRequest): ResponseEntity<TokenCheckResponse> {
+    fun tokenTestCheck(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        httpServlet: HttpServletRequest
+    ): ResponseEntity<TokenCheckResponse> {
         val accessToken = httpServlet.getHeader("Authorization")
             ?: throw IllegalArgumentException("Authorization header is required")
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.tokenTestCheck(accessToken))
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.tokenTestCheck(accessToken = accessToken, principal = principal))
     }
 }
