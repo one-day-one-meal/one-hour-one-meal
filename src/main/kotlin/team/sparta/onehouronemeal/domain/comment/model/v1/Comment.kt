@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import team.sparta.onehouronemeal.domain.common.BaseTimeEntity
+import team.sparta.onehouronemeal.domain.course.model.v1.Course
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 
 @Entity
@@ -18,12 +19,13 @@ class Comment(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    val courseId: Long,
+    @JoinColumn(name = "course_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    val course: Course,
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     val user: User,
 
     val content: String,
-
 ) : BaseTimeEntity()
