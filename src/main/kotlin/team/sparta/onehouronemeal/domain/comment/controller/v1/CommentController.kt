@@ -13,35 +13,36 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CommentResponse
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CreateCommentRequest
+import team.sparta.onehouronemeal.domain.comment.dto.v1.UpdateCommentRequest
 import team.sparta.onehouronemeal.domain.comment.service.v1.CommentService
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
-@RequestMapping("/api/v1/courses/{courseId}/comments/{commentId}")
+@RequestMapping("/api/v1/courses/{courseId}/comments}")
 @RestController
 class CommentController(private val commentService: CommentService) {
 
-    @GetMapping
-    fun getComment(@PathVariable commentId: Long): ResponseEntity<CommentResponse> {
+    @GetMapping("/{commentId}")
+    fun getComment(@PathVariable courseId: Long, @PathVariable commentId: Long): ResponseEntity<CommentResponse> {
         return ResponseEntity.ok(commentService.getComment(commentId))
     }
 
     @PostMapping
     fun createComment(
-        @PathVariable commentId: Long,
+        @PathVariable courseId: Long,
         @RequestBody request: CreateCommentRequest
     ): ResponseEntity<CommentResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(commentId, request))
     }
 
-    @PutMapping
+    @PutMapping("/{commentId}")
     fun updateComment(
-        @PathVariable commentId: Long,
-        @RequestBody request: CreateCommentRequest
+        @PathVariable courseId: Long, @PathVariable commentId: Long,
+        @RequestBody request: UpdateCommentRequest
     ): ResponseEntity<CommentResponse> {
         return ResponseEntity.ok(commentService.updateComment(commentId, request))
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{commentId}")
     fun deleteComment(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable commentId: Long
@@ -50,7 +51,7 @@ class CommentController(private val commentService: CommentService) {
         return ResponseEntity.noContent().build()
     }
 
-    @PostMapping("/reports")
+    @PostMapping("/{commentId}/reports")
     fun reportComment(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable commentId: Long
