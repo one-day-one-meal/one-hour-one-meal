@@ -47,7 +47,7 @@ class User(
     val id: Long? = null
 
     fun checkPermission(userId: Long, role: String): Boolean {
-        return this.id == userId && role == "ROLE_ADMIN"
+        return this.id == userId || role == "ROLE_ADMIN"
     }
 
     fun updateProfile(profile: Profile) {
