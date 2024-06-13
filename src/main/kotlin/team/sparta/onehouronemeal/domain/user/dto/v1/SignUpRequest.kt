@@ -13,6 +13,9 @@ data class SignUpRequest(
 ) {
     fun to(encoder: PasswordEncoder, role: String): User {
         val actualRole = UserRole.valueOf(role)
+
+        if (actualRole == UserRole.ADMIN) throw IllegalArgumentException("Admin cannot be created by sign up")
+
         val status = if (actualRole == UserRole.CHEF) UserStatus.PENDING else UserStatus.ACTIVE
 
         return User(
