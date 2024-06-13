@@ -117,6 +117,10 @@ class UserService(
 
     @Transactional
     fun unsubscribeChef(principal: UserPrincipal, chefId: Long) {
+        if (!subscriptionRepository.isSubscribed(principal.id, chefId)) {
+            throw IllegalArgumentException("You are not subscribed to this chef")
+        }
+
         subscriptionRepository.unsubscribe(principal.id, chefId)
     }
 }

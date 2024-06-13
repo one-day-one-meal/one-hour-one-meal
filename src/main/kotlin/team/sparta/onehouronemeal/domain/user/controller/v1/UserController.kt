@@ -66,6 +66,8 @@ class UserController(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable chefId: Long
     ): ResponseEntity<SubscriptionResponse> {
+        if (principal.id == chefId) throw IllegalArgumentException("You can't subscribe to yourself")
+
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.subscribeChef(principal, chefId))
     }
 
@@ -74,6 +76,7 @@ class UserController(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable chefId: Long
     ): ResponseEntity<Unit> {
+        if (principal.id == chefId) throw IllegalArgumentException("You can't unsubscribe to yourself")
         userService.unsubscribeChef(principal, chefId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
