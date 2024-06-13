@@ -3,7 +3,6 @@ package team.sparta.onehouronemeal.domain.user.service.v1
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.sparta.onehouronemeal.domain.auth.common.PermissionChecker
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
@@ -51,7 +50,7 @@ class UserService(
 
     fun getUserProfile(userId: Long, principal: UserPrincipal): UserResponse {
         return userRepository.findById(userId)
-            ?.also { PermissionChecker.check(it.id!!, principal) }
+            ?.also { checkPermission(it, principal) }
             ?.let { UserResponse.from(it) }
             ?: throw ModelNotFoundException("User not found with id", userId)
     }
@@ -59,7 +58,7 @@ class UserService(
     @Transactional
     fun updateUserProfile(userId: Long, principal: UserPrincipal, request: UpdateUserRequest): UserResponse {
         return userRepository.findById(userId)
-            ?.also { PermissionChecker.check(it.id!!, principal) }
+            ?.also { checkPermission(it, principal) }
             ?.also { request.apply(it) }
             ?.let { UserResponse.from(it) }
             ?: throw ModelNotFoundException("User not found with id", userId)
@@ -81,7 +80,7 @@ class UserService(
 
     fun tokenTestCheck(accessToken: String, principal: UserPrincipal): TokenCheckResponse {
         val userId = principal.id
-        val role = principal.authorities.firstOrNull()?.authority ?: "ROLE_ANONYMOUS"
+        val role = principal.role
 
         return TokenCheckResponse.from(userId, role)
     }
@@ -117,5 +116,14 @@ class UserService(
         }
 
         subscriptionRepository.unsubscribe(principal.id, chefId)
+    }
+
+    private fun checkPermission(user: User, principal: UserPrincipal) {
+        check(
+            user.checkPermission(
+                principal.id,
+                principal.role
+            )
+        ) { throw AccessDeniedException("You do not own this user") }
     }
 }

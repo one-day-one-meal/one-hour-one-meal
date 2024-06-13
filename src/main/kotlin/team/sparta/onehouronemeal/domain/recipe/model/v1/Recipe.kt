@@ -20,5 +20,9 @@ class Recipe(
     var title: String,
     var describe: String,
     var videoUrl: String?,
-) : BaseTimeEntity()
+) : BaseTimeEntity() {
+    fun checkPermission(userId: Long, role: String): Boolean {
+        return this.id == userId || role == "ROLE_ADMIN"
+    }
+}
 
