@@ -1,10 +1,8 @@
 package team.sparta.onehouronemeal.domain.comment.service.v1
 
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CommentResponse
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CreateCommentRequest
 import team.sparta.onehouronemeal.domain.comment.dto.v1.UpdateCommentRequest
@@ -12,6 +10,7 @@ import team.sparta.onehouronemeal.domain.comment.model.v1.Comment
 import team.sparta.onehouronemeal.domain.comment.repository.v1.CommentRepository
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
+import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
@@ -76,6 +75,6 @@ class CommentService(
                 principal.id,
                 principal.role
             )
-        ) { throw ResponseStatusException(HttpStatus.FORBIDDEN, "Permission denied") }
+        ) { throw AccessDeniedException("You do not own this comment") }
     }
 }

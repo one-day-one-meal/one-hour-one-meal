@@ -1,11 +1,9 @@
 package team.sparta.onehouronemeal.domain.user.service.v1
 
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
@@ -16,6 +14,7 @@ import team.sparta.onehouronemeal.domain.user.model.v1.Profile
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.model.v1.UserRole
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserJpaRepository
+import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
@@ -89,6 +88,6 @@ class UserService(
                 principal.id,
                 principal.role
             )
-        ) { throw ResponseStatusException(HttpStatus.FORBIDDEN, "Permission denied") }
+        ) { throw AccessDeniedException("You do not own this user") }
     }
 }
