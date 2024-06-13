@@ -35,4 +35,8 @@ class Course(
         this.title = title
         this.describe = describe
     }
+
+    fun changeStatus(status: CourseStatus) {
+        this.status = status
+    }
 }
