@@ -3,6 +3,8 @@ package team.sparta.onehouronemeal.domain.admin.service.v1
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportResponse
+import team.sparta.onehouronemeal.domain.comment.repository.v1.report.ReportRepository
 import team.sparta.onehouronemeal.domain.course.dto.v1.PendingCourseResponse
 import team.sparta.onehouronemeal.domain.course.model.v1.CourseStatus
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
@@ -15,6 +17,7 @@ import team.sparta.onehouronemeal.exception.ModelNotFoundException
 class AdminService(
     private val userRepository: UserRepository,
     private val courseRepository: CourseRepository,
+    private val reportRepository: ReportRepository,
 ) {
     fun getPendingUserList(): List<UserResponse> {
         return userRepository.findByStatusOrderByCreatedAtDesc(UserStatus.PENDING).map { UserResponse.from(it) }
@@ -51,5 +54,15 @@ class AdminService(
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", courseId)
         if (course.status != CourseStatus.PENDING) throw IllegalStateException("해당 강의는 승인 대기 중 상태가 아닙니다.")
         course.changeStatus(CourseStatus.DENIED)
+    }
+
+    fun getReportList(): List<ReportResponse> {
+        return reportRepository.findAllByOrderByCreatedAtDesc().map { ReportResponse.from(it) }
+    }
+
+    fun rejectReport(reportId: Long) {
+        reportRepository.findByIdOrNull(reportId)
+            ?.let { reportRepository.delete(it) }
+            ?: throw ModelNotFoundException("report", reportId)
     }
 }
