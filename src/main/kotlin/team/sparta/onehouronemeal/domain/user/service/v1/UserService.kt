@@ -4,7 +4,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.sparta.onehouronemeal.domain.auth.common.PermissionChecker
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
@@ -15,6 +14,7 @@ import team.sparta.onehouronemeal.domain.user.model.v1.Profile
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.model.v1.UserRole
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserJpaRepository
+import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
@@ -47,7 +47,7 @@ class UserService(
 
     fun getUserProfile(userId: Long, principal: UserPrincipal): UserResponse {
         return userRepository.findByIdOrNull(userId)
-            ?.also { PermissionChecker.check(it.id!!, principal) }
+            ?.also { checkPermission(it, principal) }
             ?.let { UserResponse.from(it) }
             ?: throw ModelNotFoundException("User not found with id", userId)
     }
@@ -55,7 +55,7 @@ class UserService(
     @Transactional
     fun updateUserProfile(userId: Long, principal: UserPrincipal, request: UpdateUserRequest): UserResponse {
         return userRepository.findByIdOrNull(userId)
-            ?.also { PermissionChecker.check(it.id!!, principal) }
+            ?.also { checkPermission(it, principal) }
             ?.also { request.apply(it) }
             ?.let { UserResponse.from(it) }
             ?: throw ModelNotFoundException("User not found with id", userId)
@@ -77,8 +77,17 @@ class UserService(
 
     fun tokenTestCheck(accessToken: String, principal: UserPrincipal): TokenCheckResponse {
         val userId = principal.id
-        val role = principal.authorities.firstOrNull()?.authority ?: "ROLE_ANONYMOUS"
+        val role = principal.role
 
         return TokenCheckResponse.from(userId, role)
+    }
+
+    private fun checkPermission(user: User, principal: UserPrincipal) {
+        check(
+            user.checkPermission(
+                principal.id,
+                principal.role
+            )
+        ) { throw AccessDeniedException("You do not own this user") }
     }
 }

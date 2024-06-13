@@ -29,6 +29,10 @@ class Comment(
 
     var content: String,
 ) : BaseTimeEntity() {
+    fun checkPermission(userId: Long, role: String): Boolean {
+        return this.user.id == userId || role == "ROLE_ADMIN"
+    }
+
     fun updateComment(content: String) {
         this.content = content
     }

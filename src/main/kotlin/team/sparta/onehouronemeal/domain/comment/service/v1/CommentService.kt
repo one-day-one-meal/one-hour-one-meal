@@ -3,7 +3,6 @@ package team.sparta.onehouronemeal.domain.comment.service.v1
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.sparta.onehouronemeal.domain.auth.common.PermissionChecker
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CommentResponse
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CreateCommentRequest
 import team.sparta.onehouronemeal.domain.comment.dto.v1.UpdateCommentRequest
@@ -11,6 +10,7 @@ import team.sparta.onehouronemeal.domain.comment.model.v1.Comment
 import team.sparta.onehouronemeal.domain.comment.repository.v1.CommentRepository
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
+import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
@@ -43,7 +43,7 @@ class CommentService(
     fun updateComment(principal: UserPrincipal, commentId: Long, request: UpdateCommentRequest): CommentResponse {
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("Comment", commentId)
 
-        PermissionChecker.check(comment.user.id!!, principal)
+        checkPermission(comment, principal)
 
         comment.updateComment(request.content)
 
@@ -54,7 +54,7 @@ class CommentService(
     fun deleteComment(principal: UserPrincipal, commentId: Long) {
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("Comment", commentId)
 
-        PermissionChecker.check(comment.user.id!!, principal)
+        checkPermission(comment, principal)
 
         commentRepository.delete(comment)
     }
@@ -67,5 +67,14 @@ class CommentService(
         // 본인 댓글에 신고 안됨
 
         TODO()
+    }
+
+    private fun checkPermission(comment: Comment, principal: UserPrincipal) {
+        check(
+            comment.checkPermission(
+                principal.id,
+                principal.role
+            )
+        ) { throw AccessDeniedException("You do not own this comment") }
     }
 }
