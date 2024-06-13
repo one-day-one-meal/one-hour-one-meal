@@ -4,6 +4,7 @@ import jakarta.persistence.Embeddable
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.MapsId
 import jakarta.persistence.Table
@@ -18,10 +19,12 @@ class Subscription(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
+    @JoinColumn(name = "user_id")
     val user: User,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("subscribedUserId")
+    @JoinColumn(name = "subscribed_user_id")
     val subscribedUser: User,
 )
 
