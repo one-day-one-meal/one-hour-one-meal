@@ -15,7 +15,7 @@ import team.sparta.onehouronemeal.domain.common.BaseTimeEntity
 @Entity
 @Table(name = "app_user")
 class User(
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     @Size(max = 30)
     val username: String,
 

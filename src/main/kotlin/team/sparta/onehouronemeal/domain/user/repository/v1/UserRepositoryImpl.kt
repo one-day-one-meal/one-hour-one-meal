@@ -24,11 +24,16 @@ class UserRepositoryImpl(
     override fun delete(user: User) {
         userJpaRepository.delete(user)
     }
+
     override fun existsById(id: Long): Boolean {
         return userJpaRepository.existsById(id)
     }
 
     override fun findByStatusOrderByCreatedAtDesc(status: UserStatus): List<User> {
         return userJpaRepository.findByStatusOrderByCreatedAtDesc(status)
+    }
+
+    override fun existsByUsername(username: String): Boolean {
+        return userJpaRepository.existsByUsername(username)
     }
 }

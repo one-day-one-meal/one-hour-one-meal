@@ -6,4 +6,8 @@ import team.sparta.onehouronemeal.domain.course.model.v1.CourseStatus
 
 interface CourseRepository : JpaRepository<Course, Long>, CustomCourseRepository {
     fun findAllByStatusIsOrderByCreatedAtDesc(courseStatus: CourseStatus): List<Course>
+    fun findAllByUserIdInAndStatusIsOrderByCreatedAtDesc(
+        subscribedChefIds: List<Long>,
+        open: CourseStatus
+    ): List<Course>
 }

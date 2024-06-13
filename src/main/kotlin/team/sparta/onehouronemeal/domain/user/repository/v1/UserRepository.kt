@@ -10,4 +10,5 @@ interface UserRepository {
     fun delete(user: User)
     fun existsById(id: Long): Boolean
     fun findByStatusOrderByCreatedAtDesc(status: UserStatus): List<User>
+    fun existsByUsername(username: String): Boolean
 }

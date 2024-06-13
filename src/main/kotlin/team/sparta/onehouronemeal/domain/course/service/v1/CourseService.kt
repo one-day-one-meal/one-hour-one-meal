@@ -16,6 +16,7 @@ import team.sparta.onehouronemeal.domain.course.repository.v1.thumbsup.ThumbsUpR
 import team.sparta.onehouronemeal.domain.recipe.dto.v1.RecipeResponse
 import team.sparta.onehouronemeal.domain.recipe.repository.v1.RecipeRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
+import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
@@ -25,7 +26,8 @@ class CourseService(
     private val courseRepository: CourseRepository,
     private val userRepository: UserRepository,
     private val thumbsUpRepository: ThumbsUpRepository,
-    private val recipeRepository: RecipeRepository
+    private val recipeRepository: RecipeRepository,
+    private val subscriptionRepository: SubscriptionRepository
 ) {
 
     private fun ThumbsUpRepository.thumbsUpCount(courseId: Long): Int {
@@ -39,11 +41,13 @@ class CourseService(
         return courseList.map { CourseResponse.from(it, thumbsUpRepository.thumbsUpCount(it.id!!)) }
     }
 
-    fun getCourseByFollowedChef(principal: UserPrincipal): List<CourseResponse> {
-        // 팔로우한 셰프의 아이디들을 조회
+    fun getCourseListBySubscribedChefs(principal: UserPrincipal): List<CourseResponse> {
+        val subscribedChefIds = subscriptionRepository.findAllByUserId(principal.id).map { it.id.subscribedUserId }
 
-        // 팔로우한 셰프들들에 대한 코스를 조회하여 OPEN 인 것만 CourseResponse 로 변환하여 반환
-        TODO()
+        val courseList =
+            courseRepository.findAllByUserIdInAndStatusIsOrderByCreatedAtDesc(subscribedChefIds, CourseStatus.OPEN)
+
+        return courseList.map { CourseResponse.from(it, thumbsUpRepository.thumbsUpCount(it.id!!)) }
     }
 
     @Transactional

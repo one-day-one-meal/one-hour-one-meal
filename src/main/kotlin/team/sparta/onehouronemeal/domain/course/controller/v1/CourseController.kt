@@ -29,11 +29,11 @@ class CourseController(
         return ResponseEntity.ok(courseService.getCourseList())
     }
 
-    @GetMapping("/following")
-    fun getCourseByFollowedChef(
+    @GetMapping("/subscriptions")
+    fun getCourseBySubscribedChefs(
         @AuthenticationPrincipal principal: UserPrincipal
     ): ResponseEntity<List<CourseResponse>> {
-        return ResponseEntity.ok(courseService.getCourseByFollowedChef(principal))
+        return ResponseEntity.ok(courseService.getCourseListBySubscribedChefs(principal))
     }
 
     @GetMapping("/{courseId}")
