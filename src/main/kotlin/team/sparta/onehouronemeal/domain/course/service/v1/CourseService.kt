@@ -1,6 +1,5 @@
 package team.sparta.onehouronemeal.domain.course.service.v1
 
-
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -68,7 +67,7 @@ class CourseService(
 
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        if (course.user.id != principal.id) throw AccessDeniedException("You do not own this course")
+        checkPermission(course, principal)
 
         course.updateCourse(request.title, request.describe)
 
@@ -81,7 +80,7 @@ class CourseService(
 
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
-        if (course.user.id != principal.id) throw AccessDeniedException("You do not own this course")
+        checkPermission(course, principal)
 
         courseRepository.delete(course)
     }
@@ -114,5 +113,14 @@ class CourseService(
             ?: throw IllegalArgumentException("You've not given a thumbs up to this post, so it can't be canceled")
 
         thumbsUpRepository.delete(thumbsUp)
+    }
+
+    private fun checkPermission(course: Course, principal: UserPrincipal) {
+        check(
+            course.checkPermission(
+                principal.id,
+                principal.role
+            )
+        ) { throw AccessDeniedException("You do not own this course") }
     }
 }

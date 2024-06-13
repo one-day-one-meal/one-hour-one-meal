@@ -29,6 +29,10 @@ class Course(
     @ManyToOne(fetch = FetchType.LAZY) var user: User
 
 ) : BaseTimeEntity() {
+    fun checkPermission(userId: Long, role: String): Boolean {
+        return user.id == userId || role == "ROLE_ADMIN"
+    }
+
     fun isOpened() = status == CourseStatus.OPEN
 
     fun updateCourse(title: String, describe: String) {
