@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CommentResponse
 import team.sparta.onehouronemeal.domain.comment.dto.v1.CreateCommentRequest
 import team.sparta.onehouronemeal.domain.comment.dto.v1.UpdateCommentRequest
+import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportRequest
+import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportResponse
 import team.sparta.onehouronemeal.domain.comment.service.v1.CommentService
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
@@ -48,7 +50,7 @@ class CommentController(private val commentService: CommentService) {
     @DeleteMapping("/{commentId}")
     fun deleteComment(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @PathVariable commentId: Long
+        @PathVariable courseId: Long, @PathVariable commentId: Long,
     ): ResponseEntity<Unit> {
         commentService.deleteComment(principal, commentId)
         return ResponseEntity.noContent().build()
@@ -57,8 +59,10 @@ class CommentController(private val commentService: CommentService) {
     @PostMapping("/{commentId}/reports")
     fun reportComment(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @PathVariable commentId: Long
-    ): ResponseEntity<Unit> {
-        return ResponseEntity.ok(commentService.reportComment(principal, commentId))
+        @PathVariable courseId: Long, @PathVariable commentId: Long,
+        @RequestBody request: ReportRequest,
+    ): ResponseEntity<ReportResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(commentService.reportComment(principal, commentId, request))
     }
 }
