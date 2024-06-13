@@ -1,10 +1,10 @@
 package team.sparta.onehouronemeal.domain.course.service.v1
 
-
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
+import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponseWithRecipes
 import team.sparta.onehouronemeal.domain.course.dto.v1.CreateCourseRequest
 import team.sparta.onehouronemeal.domain.course.dto.v1.UpdateCourseRequest
 import team.sparta.onehouronemeal.domain.course.model.v1.Course
@@ -13,6 +13,8 @@ import team.sparta.onehouronemeal.domain.course.model.v1.thumbsup.ThumbsUp
 import team.sparta.onehouronemeal.domain.course.model.v1.thumbsup.ThumbsUpId
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.course.repository.v1.thumbsup.ThumbsUpRepository
+import team.sparta.onehouronemeal.domain.recipe.dto.v1.RecipeResponse
+import team.sparta.onehouronemeal.domain.recipe.repository.v1.RecipeRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
@@ -22,7 +24,8 @@ import team.sparta.onehouronemeal.infra.security.UserPrincipal
 class CourseService(
     private val courseRepository: CourseRepository,
     private val userRepository: UserRepository,
-    private val thumbsUpRepository: ThumbsUpRepository
+    private val thumbsUpRepository: ThumbsUpRepository,
+    private val recipeRepository: RecipeRepository
 ) {
 
     private fun ThumbsUpRepository.thumbsUpCount(courseId: Long): Int {
@@ -44,12 +47,17 @@ class CourseService(
     }
 
     @Transactional
-    fun getCourse(courseId: Long): CourseResponse {
+    fun getCourse(courseId: Long): CourseResponseWithRecipes {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
         if (!course.isOpened()) throw IllegalStateException("Course Is Not Opened")
 
-        return CourseResponse.from(course, thumbsUpRepository.thumbsUpCount(course.id!!))
+        val recipeList = recipeRepository.findAllByCourseId(courseId)
+
+        return CourseResponseWithRecipes.from(
+            course,
+            thumbsUpRepository.thumbsUpCount(course.id!!),
+            recipeList.map { RecipeResponse.from(it) })
     }
 
     fun createCourse(principal: UserPrincipal, request: CreateCourseRequest): CourseResponse {

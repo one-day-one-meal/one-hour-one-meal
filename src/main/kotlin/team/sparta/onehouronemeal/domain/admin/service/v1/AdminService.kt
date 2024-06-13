@@ -3,7 +3,7 @@ package team.sparta.onehouronemeal.domain.admin.service.v1
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
+import team.sparta.onehouronemeal.domain.course.dto.v1.PendingCourseResponse
 import team.sparta.onehouronemeal.domain.course.model.v1.CourseStatus
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
@@ -34,9 +34,9 @@ class AdminService(
         user.changeStatus(UserStatus.DENIED)
     }
 
-    fun getPendingCourseList(): List<CourseResponse>? {
+    fun getPendingCourseList(): List<PendingCourseResponse>? {
         return courseRepository.findAllByStatusIsOrderByCreatedAtDesc(CourseStatus.PENDING)
-            .map { CourseResponse.from(it) }
+            .map { PendingCourseResponse.from(it) }
     }
 
     @Transactional
