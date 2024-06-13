@@ -49,4 +49,8 @@ class User(
     fun updateProfile(profile: Profile) {
         this.profile = profile
     }
+
+    fun changeStatus(status: UserStatus) {
+        this.status = status
+    }
 }
