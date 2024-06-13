@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import team.sparta.onehouronemeal.domain.admin.service.v1.AdminService
-import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
+import team.sparta.onehouronemeal.domain.course.dto.v1.PendingCourseResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 
 @RestController
@@ -36,7 +36,7 @@ class AdminController(
     }
 
     @GetMapping("/courses/pending")
-    fun getPendingCourseList(): ResponseEntity<List<CourseResponse>> {
+    fun getPendingCourseList(): ResponseEntity<List<PendingCourseResponse>> {
         return ResponseEntity.ok(adminService.getPendingCourseList())
     }
 
