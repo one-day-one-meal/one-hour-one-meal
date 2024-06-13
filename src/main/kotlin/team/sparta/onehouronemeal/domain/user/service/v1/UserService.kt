@@ -32,7 +32,7 @@ class UserService(
 ) {
     @Transactional
     fun signUp(role: String, request: SignUpRequest): UserResponse {
-        check(userRepository.existsByUsername(request.username)) { "Username already in use" }
+        check(!userRepository.existsByUsername(request.username)) { "Username already in use" }
         return request.to(passwordEncoder, role)
             .let { userRepository.save(it) }
             .let { UserResponse.from(it) }
