@@ -78,7 +78,7 @@ class CommentService(
         val report = Report(
             comment = comment,
             user = user,
-            description = request.description,
+            describe = request.describe,
         )
         return ReportResponse.from(reportRepository.save(report))
     }

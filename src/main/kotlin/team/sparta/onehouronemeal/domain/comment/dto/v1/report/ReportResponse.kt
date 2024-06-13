@@ -7,7 +7,7 @@ data class ReportResponse(
     val id: Long,
     val commentId: Long,
     val userId: Long,
-    val description: String,
+    val describe: String,
     val createdAt: LocalDateTime?,
 ) {
     companion object {
@@ -16,7 +16,7 @@ data class ReportResponse(
                 id = report.id!!,
                 commentId = report.comment.id!!,
                 userId = report.user.id!!,
-                description = report.description,
+                describe = report.describe,
                 createdAt = report.createdAt,
             )
         }
