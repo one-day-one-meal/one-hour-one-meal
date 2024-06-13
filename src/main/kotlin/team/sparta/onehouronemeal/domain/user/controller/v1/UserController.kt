@@ -61,7 +61,7 @@ class UserController(
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfile(userId, principal, request))
     }
 
-    @PutMapping("/users/subscribe/{chefId}")
+    @PostMapping("/users/subscribe/{chefId}")
     fun subscribeChef(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable chefId: Long
