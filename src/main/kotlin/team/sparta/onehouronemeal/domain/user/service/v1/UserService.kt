@@ -98,7 +98,7 @@ class UserService(
             ?: throw ModelNotFoundException("Chef not found with id", chefId)
 
         check(chef.role == UserRole.CHEF) { "User is not a chef" }
-        check(chef.status != UserStatus.ACTIVE) { "Chef is not active" }
+        check(chef.status == UserStatus.ACTIVE) { "Chef is not active" }
 
         val user = userRepository.findById(principal.id)
             ?: throw ModelNotFoundException("User not found with id", principal.id)
