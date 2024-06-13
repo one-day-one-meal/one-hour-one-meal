@@ -68,13 +68,13 @@ class CourseController(
     fun likeCourse(
         @AuthenticationPrincipal principal: UserPrincipal, @PathVariable courseId: Long
     ): ResponseEntity<Unit> {
-        return ResponseEntity.ok(courseService.likeCourse(principal, courseId))
+        return ResponseEntity.ok(courseService.thumbsUpCourse(principal, courseId))
     }
 
     @DeleteMapping("/{courseId}/thumbs-up")
     fun cancelLikeCourse(
         @AuthenticationPrincipal principal: UserPrincipal, @PathVariable courseId: Long
     ): ResponseEntity<Unit> {
-        return ResponseEntity.ok(courseService.cancelLikeCourse(principal, courseId))
+        return ResponseEntity.ok(courseService.cancelThumbsUpCourse(principal, courseId))
     }
 }

@@ -1,8 +1,9 @@
 package team.sparta.onehouronemeal.domain.course.service.v1
 
-import jakarta.transaction.Transactional
+
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
 import team.sparta.onehouronemeal.domain.course.dto.v1.CreateCourseRequest
 import team.sparta.onehouronemeal.domain.course.dto.v1.UpdateCourseRequest
@@ -28,7 +29,7 @@ class CourseService(
         return thumbsUpRepository.countByCourseId(courseId)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun getCourseList(): List<CourseResponse> {
         val courseList = courseRepository.findAllByStatusIsOrderByCreatedAtDesc(CourseStatus.OPEN)
 
@@ -85,14 +86,14 @@ class CourseService(
         courseRepository.delete(course)
     }
 
-    fun likeCourse(principal: UserPrincipal, courseId: Long) {
+    fun thumbsUpCourse(principal: UserPrincipal, courseId: Long) {
+        val thumbsUpId = ThumbsUpId(courseId = courseId, userId = principal.id)
+
+        if (thumbsUpRepository.existsById(thumbsUpId)) throw IllegalArgumentException("You've already given a thumbs up to this post")
+
         val user = userRepository.findById(principal.id) ?: throw ModelNotFoundException("User", principal.id)
 
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
-
-        val thumbsUpId = ThumbsUpId(courseId = course.id!!, userId = user.id!!)
-
-        if (thumbsUpRepository.existsById(thumbsUpId)) throw IllegalArgumentException("ThumbsUp already exist with given info")
 
         val thumbsUp = ThumbsUp(
             id = thumbsUpId, course = course, user = user
@@ -102,14 +103,15 @@ class CourseService(
     }
 
     @Transactional
-    fun cancelLikeCourse(principal: UserPrincipal, courseId: Long) {
+    fun cancelThumbsUpCourse(principal: UserPrincipal, courseId: Long) {
         if (!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
+
         if (!courseRepository.existsById(courseId)) throw ModelNotFoundException("Course", courseId)
 
         val thumbsUpId = ThumbsUpId(courseId = courseId, userId = principal.id)
 
         val thumbsUp = thumbsUpRepository.findByIdOrNull(thumbsUpId)
-            ?: throw IllegalArgumentException("You have already given a thumbs up to this post")
+            ?: throw IllegalArgumentException("You've not given a thumbs up to this post, so it can't be canceled")
 
         thumbsUpRepository.delete(thumbsUp)
     }

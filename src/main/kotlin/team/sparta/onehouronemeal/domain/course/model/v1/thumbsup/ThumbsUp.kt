@@ -31,5 +31,3 @@ data class ThumbsUpId(
     val courseId: Long,
     val userId: Long
 ) : Serializable
-
-
