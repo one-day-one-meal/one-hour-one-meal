@@ -1,6 +1,5 @@
 package team.sparta.onehouronemeal.domain.user.service.v1
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -8,20 +7,25 @@ import team.sparta.onehouronemeal.domain.auth.common.PermissionChecker
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
+import team.sparta.onehouronemeal.domain.user.dto.v1.SubscriptionResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.UpdateUserRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import team.sparta.onehouronemeal.domain.user.model.v1.Profile
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.model.v1.UserRole
-import team.sparta.onehouronemeal.domain.user.repository.v1.UserJpaRepository
+import team.sparta.onehouronemeal.domain.user.model.v1.subscription.Subscription
+import team.sparta.onehouronemeal.domain.user.model.v1.subscription.SubscriptionId
+import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
+import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
 
 @Service
 class UserService(
-    private val userRepository: UserJpaRepository,
+    private val userRepository: UserRepository,
+    private val subscriptionRepository: SubscriptionRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin
 ) {
@@ -46,7 +50,7 @@ class UserService(
     }
 
     fun getUserProfile(userId: Long, principal: UserPrincipal): UserResponse {
-        return userRepository.findByIdOrNull(userId)
+        return userRepository.findById(userId)
             ?.also { PermissionChecker.check(it.id!!, principal) }
             ?.let { UserResponse.from(it) }
             ?: throw ModelNotFoundException("User not found with id", userId)
@@ -54,7 +58,7 @@ class UserService(
 
     @Transactional
     fun updateUserProfile(userId: Long, principal: UserPrincipal, request: UpdateUserRequest): UserResponse {
-        return userRepository.findByIdOrNull(userId)
+        return userRepository.findById(userId)
             ?.also { PermissionChecker.check(it.id!!, principal) }
             ?.also { request.apply(it) }
             ?.let { UserResponse.from(it) }
@@ -63,7 +67,7 @@ class UserService(
 
     @Transactional
     fun tokenTestGenerate(): SignInResponse {
-        return (userRepository.findByIdOrNull(1)
+        return (userRepository.findById(1)
             ?: userRepository.save(
                 User(
                     username = "test",
@@ -80,5 +84,39 @@ class UserService(
         val role = principal.authorities.firstOrNull()?.authority ?: "ROLE_ANONYMOUS"
 
         return TokenCheckResponse.from(userId, role)
+    }
+
+    fun subscribeChef(principal: UserPrincipal, chefId: Long): SubscriptionResponse {
+        if (subscriptionRepository.isSubscribed(principal.id, chefId)) {
+            throw IllegalArgumentException("Already subscribed")
+        }
+
+        val chef = userRepository.findById(chefId)
+            ?: throw ModelNotFoundException("Chef not found with id", chefId)
+
+        if (chef.role != UserRole.CHEF) {
+            throw IllegalArgumentException("User is not a chef")
+        }
+
+        val user = userRepository.findById(principal.id)
+            ?: throw ModelNotFoundException("User not found with id", principal.id)
+
+        return SubscriptionResponse.from(
+            subscriptionRepository.subscribe(
+                Subscription(
+                    id = SubscriptionId(
+                        userId = principal.id,
+                        subscribedUserId = chefId
+                    ),
+                    user = user,
+                    subscribedUser = chef
+                )
+            )
+        )
+    }
+
+    @Transactional
+    fun unsubscribeChef(principal: UserPrincipal, chefId: Long) {
+        subscriptionRepository.unsubscribe(principal.id, chefId)
     }
 }

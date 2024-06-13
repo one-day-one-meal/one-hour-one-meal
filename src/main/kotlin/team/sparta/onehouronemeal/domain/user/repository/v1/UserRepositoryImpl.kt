@@ -24,6 +24,7 @@ class UserRepositoryImpl(
     override fun delete(user: User) {
         userJpaRepository.delete(user)
     }
+
     override fun existsById(id: Long): Boolean {
         return userJpaRepository.existsById(id)
     }
