@@ -42,8 +42,7 @@ class CourseController(
 
     @PostMapping
     fun createCourse(
-        @AuthenticationPrincipal principal: UserPrincipal,
-        @RequestBody request: CreateCourseRequest
+        @AuthenticationPrincipal principal: UserPrincipal, @RequestBody request: CreateCourseRequest
     ): ResponseEntity<CourseResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(principal, request))
     }

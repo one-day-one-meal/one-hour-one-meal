@@ -1,5 +1,6 @@
 package team.sparta.onehouronemeal.exception
 
+import org.apache.coyote.Response
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -27,5 +28,10 @@ class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException::class)
     fun handleRuntimeException(e: RuntimeException): ResponseEntity<ErrorDto> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDto(e.message, "500"))
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorDto> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorDto(e.message, "403"))
     }
 }

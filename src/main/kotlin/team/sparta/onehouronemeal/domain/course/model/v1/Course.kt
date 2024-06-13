@@ -9,11 +9,17 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import team.sparta.onehouronemeal.domain.common.BaseTimeEntity
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 
 @Entity
+@Table(name = "course")
 class Course(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null,
+
     @Column var title: String,
 
     @Column var describe: String,
@@ -23,7 +29,10 @@ class Course(
     @ManyToOne(fetch = FetchType.LAZY) var user: User
 
 ) : BaseTimeEntity() {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    fun isOpened() = status == CourseStatus.OPEN
+
+    fun updateCourse(title: String, describe: String) {
+        this.title = title
+        this.describe = describe
+    }
 }
