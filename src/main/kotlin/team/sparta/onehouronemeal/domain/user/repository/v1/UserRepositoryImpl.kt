@@ -3,6 +3,7 @@ package team.sparta.onehouronemeal.domain.user.repository.v1
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import team.sparta.onehouronemeal.domain.user.model.v1.User
+import team.sparta.onehouronemeal.domain.user.model.v1.UserStatus
 
 @Repository
 class UserRepositoryImpl(
@@ -25,5 +26,9 @@ class UserRepositoryImpl(
     }
     override fun existsById(id: Long): Boolean {
         return userJpaRepository.existsById(id)
+    }
+
+    override fun findByStatusOrderByCreatedAtDesc(status: UserStatus): List<User> {
+        return userJpaRepository.findByStatusOrderByCreatedAtDesc(status)
     }
 }
