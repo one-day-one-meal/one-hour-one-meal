@@ -13,6 +13,7 @@ import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import team.sparta.onehouronemeal.domain.user.model.v1.Profile
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.model.v1.UserRole
+import team.sparta.onehouronemeal.domain.user.model.v1.UserStatus
 import team.sparta.onehouronemeal.domain.user.model.v1.subscription.Subscription
 import team.sparta.onehouronemeal.domain.user.model.v1.subscription.SubscriptionId
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
@@ -31,6 +32,7 @@ class UserService(
 ) {
     @Transactional
     fun signUp(role: String, request: SignUpRequest): UserResponse {
+        check(userRepository.existsByUsername(request.username)) { "Username already in use" }
         return request.to(passwordEncoder, role)
             .let { userRepository.save(it) }
             .let { UserResponse.from(it) }
@@ -96,6 +98,7 @@ class UserService(
             ?: throw ModelNotFoundException("Chef not found with id", chefId)
 
         check(chef.role == UserRole.CHEF) { "User is not a chef" }
+        check(chef.status != UserStatus.ACTIVE) { "Chef is not active" }
 
         val user = userRepository.findById(principal.id)
             ?: throw ModelNotFoundException("User not found with id", principal.id)

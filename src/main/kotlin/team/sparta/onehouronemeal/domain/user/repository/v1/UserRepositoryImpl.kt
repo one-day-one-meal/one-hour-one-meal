@@ -32,4 +32,8 @@ class UserRepositoryImpl(
     override fun findByStatusOrderByCreatedAtDesc(status: UserStatus): List<User> {
         return userJpaRepository.findByStatusOrderByCreatedAtDesc(status)
     }
+
+    override fun existsByUsername(username: String): Boolean {
+        return userJpaRepository.existsByUsername(username)
+    }
 }
