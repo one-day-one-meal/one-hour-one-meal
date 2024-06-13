@@ -87,32 +87,27 @@ class UserService(
     }
 
     fun subscribeChef(principal: UserPrincipal, chefId: Long): SubscriptionResponse {
-        if (subscriptionRepository.isSubscribed(principal.id, chefId)) {
-            throw IllegalArgumentException("Already subscribed")
-        }
+        check(!subscriptionRepository.isSubscribed(principal.id, chefId)) { "Already subscribed" }
 
         val chef = userRepository.findById(chefId)
             ?: throw ModelNotFoundException("Chef not found with id", chefId)
 
-        if (chef.role != UserRole.CHEF) {
-            throw IllegalArgumentException("User is not a chef")
-        }
+        check(chef.role == UserRole.CHEF) { "User is not a chef" }
 
         val user = userRepository.findById(principal.id)
             ?: throw ModelNotFoundException("User not found with id", principal.id)
 
-        return SubscriptionResponse.from(
-            subscriptionRepository.subscribe(
-                Subscription(
-                    id = SubscriptionId(
-                        userId = principal.id,
-                        subscribedUserId = chefId
-                    ),
-                    user = user,
-                    subscribedUser = chef
-                )
-            )
+        val subscription = Subscription(
+            id = SubscriptionId(
+                userId = principal.id,
+                subscribedUserId = chefId
+            ),
+            user = user,
+            subscribedUser = chef
         )
+
+        return subscriptionRepository.subscribe(subscription)
+            .let { SubscriptionResponse.from(it) }
     }
 
     @Transactional
