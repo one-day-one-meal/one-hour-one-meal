@@ -52,7 +52,10 @@ class UserService(
     fun getUserProfile(userId: Long, principal: UserPrincipal): UserResponse {
         return userRepository.findById(userId)
             ?.also { checkPermission(it, principal) }
-            ?.let { UserResponse.from(it) }
+            ?.let {
+                val subscribedChefList = subscriptionRepository.findAllByUserId(userId)
+                UserResponse.from(it, subscribedChefList)
+            }
             ?: throw ModelNotFoundException("User not found with id", userId)
     }
 
