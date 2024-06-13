@@ -27,5 +27,9 @@ class Comment(
     @ManyToOne(fetch = FetchType.LAZY)
     val user: User,
 
-    val content: String,
-) : BaseTimeEntity()
+    var content: String,
+) : BaseTimeEntity() {
+    fun updateComment(content: String) {
+        this.content = content
+    }
+}

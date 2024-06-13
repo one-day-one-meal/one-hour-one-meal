@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
+import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponseWithRecipes
 import team.sparta.onehouronemeal.domain.course.dto.v1.CreateCourseRequest
 import team.sparta.onehouronemeal.domain.course.dto.v1.UpdateCourseRequest
 import team.sparta.onehouronemeal.domain.course.service.v1.CourseService
@@ -36,7 +37,7 @@ class CourseController(
     }
 
     @GetMapping("/{courseId}")
-    fun getCourse(@PathVariable courseId: Long): ResponseEntity<CourseResponse> {
+    fun getCourse(@PathVariable courseId: Long): ResponseEntity<CourseResponseWithRecipes> {
         return ResponseEntity.ok(courseService.getCourse(courseId))
     }
 
@@ -68,13 +69,13 @@ class CourseController(
     fun likeCourse(
         @AuthenticationPrincipal principal: UserPrincipal, @PathVariable courseId: Long
     ): ResponseEntity<Unit> {
-        return ResponseEntity.ok(courseService.likeCourse(principal, courseId))
+        return ResponseEntity.ok(courseService.thumbsUpCourse(principal, courseId))
     }
 
     @DeleteMapping("/{courseId}/thumbs-up")
     fun cancelLikeCourse(
         @AuthenticationPrincipal principal: UserPrincipal, @PathVariable courseId: Long
     ): ResponseEntity<Unit> {
-        return ResponseEntity.ok(courseService.cancelLikeCourse(principal, courseId))
+        return ResponseEntity.ok(courseService.cancelThumbsUpCourse(principal, courseId))
     }
 }
