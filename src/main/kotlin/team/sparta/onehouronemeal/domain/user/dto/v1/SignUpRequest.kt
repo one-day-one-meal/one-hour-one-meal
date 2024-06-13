@@ -11,18 +11,16 @@ data class SignUpRequest(
     val password: String,
     val nickname: String,
 ) {
-    companion object {
-        fun to(encoder: PasswordEncoder, role: String, request: SignUpRequest): User {
-            val actualRole = UserRole.valueOf(role)
-            val status = if (actualRole == UserRole.CHEF) UserStatus.PENDING else UserStatus.ACTIVE
+    fun to(encoder: PasswordEncoder, role: String): User {
+        val actualRole = UserRole.valueOf(role)
+        val status = if (actualRole == UserRole.CHEF) UserStatus.PENDING else UserStatus.ACTIVE
 
-            return User(
-                username = request.username,
-                password = encoder.encode(request.password),
-                role = actualRole,
-                status = status,
-                profile = Profile(nickname = request.nickname),
-            )
-        }
+        return User(
+            username = username,
+            password = encoder.encode(password),
+            role = actualRole,
+            status = status,
+            profile = Profile(nickname = nickname),
+        )
     }
 }

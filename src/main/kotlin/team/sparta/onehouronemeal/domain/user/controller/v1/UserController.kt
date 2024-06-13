@@ -43,16 +43,20 @@ class UserController(
     }
 
     @GetMapping("/users/{userId}/profiles")
-    fun getUserProfile(@PathVariable userId: Long): ResponseEntity<UserResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserProfile(userId))
+    fun getUserProfile(
+        @PathVariable userId: Long,
+        @AuthenticationPrincipal principal: UserPrincipal,
+    ): ResponseEntity<UserResponse> {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserProfile(userId, principal))
     }
 
     @PutMapping("/users/{userId}/profiles")
     fun updateUserProfile(
         @PathVariable userId: Long,
+        @AuthenticationPrincipal principal: UserPrincipal,
         @RequestBody request: UpdateUserRequest
     ): ResponseEntity<UserResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfile(userId, request))
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfile(userId, principal, request))
     }
 
     @GetMapping("/auth/token-test-generate")
