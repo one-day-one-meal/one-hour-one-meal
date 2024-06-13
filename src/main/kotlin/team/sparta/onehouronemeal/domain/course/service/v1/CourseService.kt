@@ -1,14 +1,18 @@
 package team.sparta.onehouronemeal.domain.course.service.v1
 
-import jakarta.transaction.Transactional
+
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
 import team.sparta.onehouronemeal.domain.course.dto.v1.CreateCourseRequest
 import team.sparta.onehouronemeal.domain.course.dto.v1.UpdateCourseRequest
 import team.sparta.onehouronemeal.domain.course.model.v1.Course
 import team.sparta.onehouronemeal.domain.course.model.v1.CourseStatus
+import team.sparta.onehouronemeal.domain.course.model.v1.thumbsup.ThumbsUp
+import team.sparta.onehouronemeal.domain.course.model.v1.thumbsup.ThumbsUpId
 import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
+import team.sparta.onehouronemeal.domain.course.repository.v1.thumbsup.ThumbsUpRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
@@ -16,14 +20,20 @@ import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
 @Service
 class CourseService(
-    private val courseRepository: CourseRepository, private val userRepository: UserRepository
+    private val courseRepository: CourseRepository,
+    private val userRepository: UserRepository,
+    private val thumbsUpRepository: ThumbsUpRepository
 ) {
 
-    @Transactional
+    private fun ThumbsUpRepository.thumbsUpCount(courseId: Long): Int {
+        return thumbsUpRepository.countByCourseId(courseId)
+    }
+
+    @Transactional(readOnly = true)
     fun getCourseList(): List<CourseResponse> {
         val courseList = courseRepository.findAllByStatusIsOrderByCreatedAtDesc(CourseStatus.OPEN)
 
-        return courseList.map { CourseResponse.from(it) }
+        return courseList.map { CourseResponse.from(it, thumbsUpRepository.thumbsUpCount(it.id!!)) }
     }
 
     fun getCourseByFollowedChef(principal: UserPrincipal): List<CourseResponse> {
@@ -39,7 +49,7 @@ class CourseService(
 
         if (!course.isOpened()) throw IllegalStateException("Course Is Not Opened")
 
-        return CourseResponse.from(course)
+        return CourseResponse.from(course, thumbsUpRepository.thumbsUpCount(course.id!!))
     }
 
     fun createCourse(principal: UserPrincipal, request: CreateCourseRequest): CourseResponse {
@@ -49,7 +59,7 @@ class CourseService(
             title = request.title, describe = request.describe, user = user
         )
 
-        return CourseResponse.from(courseRepository.save(course))
+        return CourseResponse.from(courseRepository.save(course), thumbsUpRepository.thumbsUpCount(course.id!!))
     }
 
     @Transactional
@@ -62,7 +72,7 @@ class CourseService(
 
         course.updateCourse(request.title, request.describe)
 
-        return CourseResponse.from(course)
+        return CourseResponse.from(course, thumbsUpRepository.thumbsUpCount(course.id!!))
     }
 
     @Transactional
@@ -76,23 +86,33 @@ class CourseService(
         courseRepository.delete(course)
     }
 
-    fun likeCourse(principal: UserPrincipal, courseId: Long) {
-        // User 본인 확인?
+    fun thumbsUpCourse(principal: UserPrincipal, courseId: Long) {
+        val thumbsUpId = ThumbsUpId(courseId = courseId, userId = principal.id)
 
-        // Like 엔티티 생성 및 저장
+        if (thumbsUpRepository.existsById(thumbsUpId)) throw IllegalArgumentException("You've already given a thumbs up to this post")
 
-        // LikeService 를 따로 만들것인가?에 대해 고민해봐야함
+        val user = userRepository.findById(principal.id) ?: throw ModelNotFoundException("User", principal.id)
 
-        TODO()
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
+
+        val thumbsUp = ThumbsUp(
+            id = thumbsUpId, course = course, user = user
+        )
+
+        thumbsUpRepository.save(thumbsUp)
     }
 
-    fun cancelLikeCourse(principal: UserPrincipal, courseId: Long) {
-        // User 본인 확인?
+    @Transactional
+    fun cancelThumbsUpCourse(principal: UserPrincipal, courseId: Long) {
+        if (!userRepository.existsById(principal.id)) throw ModelNotFoundException("User", principal.id)
 
-        // Like 조회 후 삭제
+        if (!courseRepository.existsById(courseId)) throw ModelNotFoundException("Course", courseId)
 
-        // LikeService 를 따로 만들것인가?에 대해 고민해봐야함
+        val thumbsUpId = ThumbsUpId(courseId = courseId, userId = principal.id)
 
-        TODO()
+        val thumbsUp = thumbsUpRepository.findByIdOrNull(thumbsUpId)
+            ?: throw IllegalArgumentException("You've not given a thumbs up to this post, so it can't be canceled")
+
+        thumbsUpRepository.delete(thumbsUp)
     }
 }
