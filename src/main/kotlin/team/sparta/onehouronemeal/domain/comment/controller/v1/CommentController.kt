@@ -28,18 +28,21 @@ class CommentController(private val commentService: CommentService) {
 
     @PostMapping
     fun createComment(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable courseId: Long,
         @RequestBody request: CreateCommentRequest
     ): ResponseEntity<CommentResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(courseId, request))
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(commentService.createComment(principal, courseId, request))
     }
 
     @PutMapping("/{commentId}")
     fun updateComment(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable courseId: Long, @PathVariable commentId: Long,
         @RequestBody request: UpdateCommentRequest
     ): ResponseEntity<CommentResponse> {
-        return ResponseEntity.ok(commentService.updateComment(commentId, request))
+        return ResponseEntity.ok(commentService.updateComment(principal, commentId, request))
     }
 
     @DeleteMapping("/{commentId}")
