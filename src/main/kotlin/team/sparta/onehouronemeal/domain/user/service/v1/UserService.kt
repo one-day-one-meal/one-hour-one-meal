@@ -17,6 +17,7 @@ import team.sparta.onehouronemeal.domain.user.model.v1.subscription.Subscription
 import team.sparta.onehouronemeal.domain.user.model.v1.subscription.SubscriptionId
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
+import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
