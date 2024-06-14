@@ -25,4 +25,3 @@ class Recipe(
         return this.id == userId || role == "ROLE_ADMIN"
     }
 }
-
