@@ -5,9 +5,7 @@ import team.sparta.onehouronemeal.infra.oauth.client.dto.OAuth2UserInfo
 import team.sparta.onehouronemeal.infra.oauth.common.OAuth2Provider
 
 class NaverUserInfoResponse(
-    @JsonProperty("resultcode")
-    val resultCode: String,
-    val message: String,
+    @JsonProperty("response")
     response: NaverUserInfoDetailResponse
 ) : OAuth2UserInfo(
     provider = OAuth2Provider.NAVER,
