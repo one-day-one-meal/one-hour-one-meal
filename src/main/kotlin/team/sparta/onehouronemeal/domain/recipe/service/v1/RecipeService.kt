@@ -9,27 +9,36 @@ import team.sparta.onehouronemeal.domain.recipe.dto.v1.RecipeResponse
 import team.sparta.onehouronemeal.domain.recipe.dto.v1.UpdateRecipeRequest
 import team.sparta.onehouronemeal.domain.recipe.model.v1.Recipe
 import team.sparta.onehouronemeal.domain.recipe.repository.v1.RecipeRepository
+import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
+import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
 @Service
 class RecipeService(
     private val recipeRepository: RecipeRepository,
     private val courseRepository: CourseRepository,
 ) {
-    fun getAllRecipeList(courseId: Long): List<RecipeResponse> {
-        if (!courseRepository.existsById(courseId)) throw ModelNotFoundException("Course", courseId)
-        return recipeRepository.findAllByCourseId(courseId).map { RecipeResponse.from(it) }
+    companion object {
+        private const val COURSE_NOT_FOUND = "Course"
+        private const val RECIPE_NOT_FOUND = "Recipe"
     }
 
-    fun getRecipeById(courseId: Long, recipeId: Long): RecipeResponse {
-        if (!courseRepository.existsById(courseId)) throw ModelNotFoundException("Course", courseId)
-        val recipe =
-            recipeRepository.findByCourseIdAndId(courseId, recipeId) ?: throw ModelNotFoundException("Recipe", recipeId)
+    fun getAllRecipeList(courseId: Long): List<RecipeResponse> {
+        validateCourseExists(courseId)
+        return recipeRepository.findByCourseId(courseId).map { RecipeResponse.from(it) }
+    }
+
+    fun getRecipeById(courseId: Long, recipeId: Long, principal: UserPrincipal): RecipeResponse {
+        validateCourseExists(courseId)
+        val recipe = recipeRepository.findByCourseIdAndRecipeId(courseId, recipeId)
+            ?: throw ModelNotFoundException(RECIPE_NOT_FOUND, recipeId)
+        checkPermission(recipe, principal)
         return RecipeResponse.from(recipe)
     }
 
     fun createRecipe(courseId: Long, request: CreateRecipeRequest): RecipeResponse {
-        val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException(COURSE_NOT_FOUND, courseId)
         val recipe = Recipe(
             course = course,
             title = request.title,
@@ -40,11 +49,16 @@ class RecipeService(
     }
 
     @Transactional
-    fun updateRecipe(courseId: Long, recipeId: Long, request: UpdateRecipeRequest): RecipeResponse {
-        if (!courseRepository.existsById(courseId)) throw ModelNotFoundException("Course", courseId)
-        val recipe =
-            recipeRepository.findByCourseIdAndId(courseId, recipeId) ?: throw ModelNotFoundException("Recipe", recipeId)
-
+    fun updateRecipe(
+        courseId: Long,
+        recipeId: Long,
+        request: UpdateRecipeRequest,
+        principal: UserPrincipal
+    ): RecipeResponse {
+        validateCourseExists(courseId)
+        val recipe = recipeRepository.findByCourseIdAndId(courseId, recipeId)
+            ?: throw ModelNotFoundException(RECIPE_NOT_FOUND, recipeId)
+        checkPermission(recipe, principal)
         recipe.title = request.title
         recipe.describe = request.describe
         recipe.videoUrl = request.videoUrl
@@ -53,11 +67,21 @@ class RecipeService(
     }
 
     @Transactional
-    fun deleteRecipe(courseId: Long, recipeId: Long) {
-        if (!courseRepository.existsById(courseId)) throw ModelNotFoundException("Course", courseId)
-        val recipe =
-            recipeRepository.findByCourseIdAndId(courseId, recipeId) ?: throw ModelNotFoundException("Recipe", recipeId)
-
+    fun deleteRecipe(courseId: Long, recipeId: Long, principal: UserPrincipal) {
+        validateCourseExists(courseId)
+        val recipe = recipeRepository.findByCourseIdAndId(courseId, recipeId)
+            ?: throw ModelNotFoundException(RECIPE_NOT_FOUND, recipeId)
+        checkPermission(recipe, principal)
         recipeRepository.delete(recipe)
+    }
+
+    private fun validateCourseExists(courseId: Long) {
+        if (!courseRepository.existsById(courseId)) throw ModelNotFoundException(COURSE_NOT_FOUND, courseId)
+    }
+
+    private fun checkPermission(recipe: Recipe, principal: UserPrincipal) {
+        if (!recipe.checkPermission(principal.id, principal.role)) {
+            throw AccessDeniedException("You do not have permission to access this recipe")
+        }
     }
 }
