@@ -3,6 +3,7 @@ package team.sparta.onehouronemeal.domain.course.service.v1
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.sparta.onehouronemeal.domain.comment.repository.v1.CommentRepository
 import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponse
 import team.sparta.onehouronemeal.domain.course.dto.v1.CourseResponseWithRecipes
 import team.sparta.onehouronemeal.domain.course.dto.v1.CreateCourseRequest
@@ -27,7 +28,8 @@ class CourseService(
     private val userRepository: UserRepository,
     private val thumbsUpRepository: ThumbsUpRepository,
     private val recipeRepository: RecipeRepository,
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
+    private val commentRepository: CommentRepository
 ) {
 
     private fun ThumbsUpRepository.thumbsUpCount(courseId: Long): Int {
@@ -94,6 +96,15 @@ class CourseService(
         val course = courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("Course", courseId)
 
         checkPermission(course, principal)
+
+        val recipes = recipeRepository.findAllByCourseId(courseId)
+        recipeRepository.deleteAll(recipes)
+
+        val comments = commentRepository.findAllByCourseId(courseId)
+        commentRepository.deleteAll(comments)
+
+        val thumbsUps = thumbsUpRepository.findAllByCourseId(courseId)
+        thumbsUpRepository.deleteAll(thumbsUps)
 
         courseRepository.delete(course)
     }
