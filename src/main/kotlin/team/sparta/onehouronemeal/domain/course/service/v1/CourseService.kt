@@ -95,6 +95,9 @@ class CourseService(
 
         checkPermission(course, principal)
 
+        val recipes = recipeRepository.findAllByCourseId(courseId)
+        recipeRepository.deleteAll(recipes)
+
         courseRepository.delete(course)
     }
 
