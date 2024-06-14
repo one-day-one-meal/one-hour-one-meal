@@ -11,6 +11,7 @@ data class UserResponse(
     val status: String,
     val profileImageUrl: String? = null,
     val provider: String? = null,
+    val providerId: String? = null,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
     val subscribedChefList: List<SubscriptionResponse>?,
@@ -24,6 +25,7 @@ data class UserResponse(
                 status = user.status.name,
                 profileImageUrl = user.profile.profileImageUrl,
                 provider = user.provider,
+                providerId = user.providerId,
                 createdAt = user.createdAt,
                 updatedAt = user.updatedAt,
                 subscribedChefList = subscribedChefList?.map { SubscriptionResponse.from(it) }
