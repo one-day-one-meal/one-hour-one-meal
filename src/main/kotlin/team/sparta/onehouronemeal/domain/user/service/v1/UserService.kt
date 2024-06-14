@@ -15,8 +15,8 @@ import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
-import team.sparta.onehouronemeal.infra.s3.S3FileManagement
 import team.sparta.onehouronemeal.infra.oauth.client.dto.OAuth2UserInfo
+import team.sparta.onehouronemeal.infra.s3.S3FileManagement
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
 
@@ -65,10 +65,16 @@ class UserService(
     fun updateUserProfile(
         userId: Long,
         principal: UserPrincipal,
-        request: UpdateUserRequest
+        request: UpdateUserRequest,
+        image: MultipartFile?
     ): UserResponse {
+        val imageFileUrl = if (image is MultipartFile) {
+            val imageFileName = s3FileManagement.uploadImage(image)
+            s3FileManagement.getUrl(imageFileName)
+        } else null
+
         return userRepository.findById(userId)?.also { checkPermission(it, principal) }
-            ?.also { request.apply(it) }
+            ?.also { request.apply(it, imageFileUrl) }
             ?.let { UserResponse.from(it) } ?: throw ModelNotFoundException("User not found with id", userId)
     }
 

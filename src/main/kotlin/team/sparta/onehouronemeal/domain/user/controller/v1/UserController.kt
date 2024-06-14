@@ -46,13 +46,15 @@ class UserController(
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserProfile(userId, principal))
     }
 
-    @PutMapping("/users/{userId}/profiles")
+    @PutMapping("/users/{userId}/profiles", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateUserProfile(
         @PathVariable userId: Long,
         @AuthenticationPrincipal principal: UserPrincipal,
-        @RequestBody request: UpdateUserRequest,
+        @RequestPart("request") request: UpdateUserRequest,
+        @RequestPart("image", required = false) image: MultipartFile?
     ): ResponseEntity<UserResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfile(userId, principal, request))
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.updateUserProfile(userId, principal, request, image))
     }
 
     @PostMapping("/users/subscribe/{chefId}")
