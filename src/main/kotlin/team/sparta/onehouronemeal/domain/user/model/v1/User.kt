@@ -20,7 +20,7 @@ class User(
     val username: String,
 
     @Column(name = "password")
-    @Size(max = 30)
+    @Size(max = 60)
     val password: String,
 
     @Embedded

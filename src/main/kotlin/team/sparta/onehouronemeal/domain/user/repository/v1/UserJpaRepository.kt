@@ -8,4 +8,5 @@ interface UserJpaRepository : JpaRepository<User, Long> {
     fun findByUsername(username: String): User?
     fun findByStatusOrderByCreatedAtDesc(status: UserStatus): List<User>
     fun existsByUsername(username: String): Boolean
+    fun findByProviderAndProviderId(provider: String, providerId: String): User?
 }
