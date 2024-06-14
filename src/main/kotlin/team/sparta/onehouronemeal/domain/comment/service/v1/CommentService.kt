@@ -61,6 +61,9 @@ class CommentService(
 
         checkPermission(comment, principal)
 
+        val reports = reportRepository.findAllByCommentId(commentId)
+        reportRepository.deleteAll(reports)
+
         commentRepository.delete(comment)
     }
 
@@ -69,7 +72,7 @@ class CommentService(
         val user = userRepository.findById(principal.id) ?: throw ModelNotFoundException("User", principal.id)
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("Comment", commentId)
 
-        if (comment.user.id == principal.id) throw AccessDeniedException("본인 댓글에 신고 못해요.")
+        if (comment.user.id == principal.id) throw AccessDeniedException("본인 댓글 신고 못해요.")
         if (reportRepository.existsByUserIdAndCommentId(principal.id, commentId)) {
             throw IllegalArgumentException("이미 해당 댓글 신고했어요.")
         }

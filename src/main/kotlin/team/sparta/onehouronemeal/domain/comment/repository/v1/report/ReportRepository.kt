@@ -6,4 +6,5 @@ import team.sparta.onehouronemeal.domain.comment.model.v1.report.Report
 interface ReportRepository : JpaRepository<Report, Long> {
     fun existsByUserIdAndCommentId(userId: Long, commentId: Long): Boolean
     fun findAllByOrderByCreatedAtDesc(): List<Report>
+    fun findAllByCommentId(commentId: Long): List<Report>
 }
