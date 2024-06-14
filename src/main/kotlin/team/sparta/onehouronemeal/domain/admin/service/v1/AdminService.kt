@@ -64,5 +64,6 @@ class AdminService(
         reportRepository.findByIdOrNull(reportId)
             ?.let { reportRepository.delete(it) }
             ?: throw ModelNotFoundException("report", reportId)
+        TODO("soft delete")
     }
 }
