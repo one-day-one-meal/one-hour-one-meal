@@ -93,10 +93,10 @@ class UserService(
     }
 
     fun registerIfAbsentWithOAuth(info: OAuth2UserInfo): SignInResponse {
-        run {
+        return run {
             userRepository.findByProviderAndProviderId(info.provider.name, info.id)
                 ?: userRepository.save(info.to(passwordEncoder))
-        }.let { return SignInResponse.from(jwtPlugin, it) }
+        }.let { SignInResponse.from(jwtPlugin, it) }
     }
 
     fun subscribeChef(principal: UserPrincipal, chefId: Long): SubscriptionResponse {
