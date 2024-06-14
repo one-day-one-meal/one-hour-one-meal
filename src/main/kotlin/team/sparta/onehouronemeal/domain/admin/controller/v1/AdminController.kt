@@ -1,13 +1,16 @@
 package team.sparta.onehouronemeal.domain.admin.controller.v1
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import team.sparta.onehouronemeal.domain.admin.service.v1.AdminService
+import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportResponse
 import team.sparta.onehouronemeal.domain.course.dto.v1.PendingCourseResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 
@@ -50,5 +53,16 @@ class AdminController(
     fun rejectCourse(@PathVariable courseId: Long): ResponseEntity<Unit> {
         adminService.rejectCourse(courseId)
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/reports")
+    fun getReportList(): ResponseEntity<List<ReportResponse>> {
+        return ResponseEntity.ok(adminService.getReportList())
+    }
+
+    @DeleteMapping("/reports/{reportId}")
+    fun rejectReport(@PathVariable reportId: Long): ResponseEntity<Unit> {
+        adminService.rejectReport(reportId)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 }

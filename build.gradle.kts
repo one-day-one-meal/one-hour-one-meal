@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.noarg") version "1.9.24"
+    kotlin("kapt") version "1.9.24"
 }
 
 group = "team.sparta"
@@ -38,6 +39,7 @@ allOpen {
 }
 
 val jjwtVersion = "0.12.5"
+val queryDslVersion = "5.0.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -50,6 +52,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     implementation("com.h2database:h2")
+    implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -59,6 +62,8 @@ dependencies {
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+
+    kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
 }
 
 kotlin {
