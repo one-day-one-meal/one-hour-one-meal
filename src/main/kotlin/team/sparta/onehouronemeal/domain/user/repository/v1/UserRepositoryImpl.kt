@@ -33,6 +33,10 @@ class UserRepositoryImpl(
         return userJpaRepository.findByStatusOrderByCreatedAtDesc(status)
     }
 
+    override fun findByProviderAndProviderId(provider: String, providerId: String): User? {
+        return userJpaRepository.findByProviderAndProviderId(provider, providerId)
+    }
+
     override fun existsByUsername(username: String): Boolean {
         return userJpaRepository.existsByUsername(username)
     }

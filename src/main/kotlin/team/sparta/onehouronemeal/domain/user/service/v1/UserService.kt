@@ -16,6 +16,7 @@ import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.Subscri
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.s3.S3FileManagement
+import team.sparta.onehouronemeal.infra.oauth.client.dto.OAuth2UserInfo
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
 
@@ -88,6 +89,13 @@ class UserService(
         val role = principal.role
 
         return TokenCheckResponse.from(userId, role)
+    }
+
+    fun registerIfAbsentWithOAuth(info: OAuth2UserInfo): SignInResponse {
+        return run {
+            userRepository.findByProviderAndProviderId(info.provider.name, info.id)
+                ?: userRepository.save(info.to(passwordEncoder))
+        }.let { SignInResponse.from(jwtPlugin, it) }
     }
 
     fun subscribeChef(principal: UserPrincipal, chefId: Long): SubscriptionResponse {
