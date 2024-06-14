@@ -3,13 +3,8 @@ package team.sparta.onehouronemeal.domain.user.service.v1
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
-import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
-import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
-import team.sparta.onehouronemeal.domain.user.dto.v1.SubscriptionResponse
-import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
-import team.sparta.onehouronemeal.domain.user.dto.v1.UpdateUserRequest
-import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
+import org.springframework.web.multipart.MultipartFile
+import team.sparta.onehouronemeal.domain.user.dto.v1.*
 import team.sparta.onehouronemeal.domain.user.model.v1.Profile
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.model.v1.UserRole
@@ -21,6 +16,7 @@ import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.Subscri
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.oauth.client.dto.OAuth2UserInfo
+import team.sparta.onehouronemeal.infra.s3.S3FileManagement
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
 
@@ -29,13 +25,19 @@ class UserService(
     private val userRepository: UserRepository,
     private val subscriptionRepository: SubscriptionRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtPlugin: JwtPlugin
+    private val jwtPlugin: JwtPlugin,
+    private val s3FileManagement: S3FileManagement
 ) {
     @Transactional
-    fun signUp(role: String, request: SignUpRequest): UserResponse {
+    fun signUp(role: String, request: SignUpRequest, image: MultipartFile?): UserResponse {
+        val imageFileUrl = if (image is MultipartFile) {
+            val imageFileName = s3FileManagement.uploadImage(image)
+            s3FileManagement.getUrl(imageFileName)
+        } else null
+
         check(!userRepository.existsByUsername(request.username)) { "Username already in use" }
-        return request.to(passwordEncoder, role)
-            .let { userRepository.save(it) }
+
+        return request.to(passwordEncoder, role, imageFileUrl).let { userRepository.save(it) }
             .let { UserResponse.from(it) }
     }
 
@@ -53,36 +55,39 @@ class UserService(
     }
 
     fun getUserProfile(userId: Long, principal: UserPrincipal): UserResponse {
-        return userRepository.findById(userId)
-            ?.also { checkPermission(it, principal) }
-            ?.let {
-                val subscribedChefList = subscriptionRepository.findAllByUserId(userId)
-                UserResponse.from(it, subscribedChefList)
-            }
-            ?: throw ModelNotFoundException("User not found with id", userId)
+        return userRepository.findById(userId)?.also { checkPermission(it, principal) }?.let {
+            val subscribedChefList = subscriptionRepository.findAllByUserId(userId)
+            UserResponse.from(it, subscribedChefList)
+        } ?: throw ModelNotFoundException("User not found with id", userId)
     }
 
     @Transactional
-    fun updateUserProfile(userId: Long, principal: UserPrincipal, request: UpdateUserRequest): UserResponse {
-        return userRepository.findById(userId)
-            ?.also { checkPermission(it, principal) }
-            ?.also { request.apply(it) }
-            ?.let { UserResponse.from(it) }
-            ?: throw ModelNotFoundException("User not found with id", userId)
+    fun updateUserProfile(
+        userId: Long,
+        principal: UserPrincipal,
+        request: UpdateUserRequest,
+        image: MultipartFile?
+    ): UserResponse {
+        val imageFileUrl = if (image is MultipartFile) {
+            val imageFileName = s3FileManagement.uploadImage(image)
+            s3FileManagement.getUrl(imageFileName)
+        } else null
+
+        return userRepository.findById(userId)?.also { checkPermission(it, principal) }
+            ?.also { request.apply(it, imageFileUrl) }
+            ?.let { UserResponse.from(it) } ?: throw ModelNotFoundException("User not found with id", userId)
     }
 
     @Transactional
     fun tokenTestGenerate(): SignInResponse {
-        return (userRepository.findById(1)
-            ?: userRepository.save(
-                User(
-                    username = "test",
-                    password = "12345678",
-                    profile = Profile(nickname = "testAdminNickname"),
-                    role = UserRole.ADMIN
-                )
-            ))
-            .let { SignInResponse.from(jwtPlugin = jwtPlugin, user = it) }
+        return (userRepository.findById(1) ?: userRepository.save(
+            User(
+                username = "test",
+                password = "12345678",
+                profile = Profile(nickname = "testAdminNickname"),
+                role = UserRole.ADMIN
+            )
+        )).let { SignInResponse.from(jwtPlugin = jwtPlugin, user = it) }
     }
 
     fun tokenTestCheck(accessToken: String, principal: UserPrincipal): TokenCheckResponse {
@@ -102,26 +107,23 @@ class UserService(
     fun subscribeChef(principal: UserPrincipal, chefId: Long): SubscriptionResponse {
         check(!subscriptionRepository.isSubscribed(principal.id, chefId)) { "Already subscribed" }
 
-        val chef = userRepository.findById(chefId)
-            ?: throw ModelNotFoundException("Chef not found with id", chefId)
+        val chef = userRepository.findById(chefId) ?: throw ModelNotFoundException("Chef not found with id", chefId)
 
         check(chef.role == UserRole.CHEF) { "User is not a chef" }
         check(chef.status == UserStatus.ACTIVE) { "Chef is not active" }
 
-        val user = userRepository.findById(principal.id)
-            ?: throw ModelNotFoundException("User not found with id", principal.id)
+        val user = userRepository.findById(principal.id) ?: throw ModelNotFoundException(
+            "User not found with id",
+            principal.id
+        )
 
         val subscription = Subscription(
             id = SubscriptionId(
-                userId = principal.id,
-                subscribedUserId = chefId
-            ),
-            user = user,
-            subscribedUser = chef
+                userId = principal.id, subscribedUserId = chefId
+            ), user = user, subscribedUser = chef
         )
 
-        return subscriptionRepository.subscribe(subscription)
-            .let { SubscriptionResponse.from(it) }
+        return subscriptionRepository.subscribe(subscription).let { SubscriptionResponse.from(it) }
     }
 
     @Transactional
@@ -136,8 +138,7 @@ class UserService(
     private fun checkPermission(user: User, principal: UserPrincipal) {
         check(
             user.checkPermission(
-                principal.id,
-                principal.role
+                principal.id, principal.role
             )
         ) { throw AccessDeniedException("You do not own this user") }
     }

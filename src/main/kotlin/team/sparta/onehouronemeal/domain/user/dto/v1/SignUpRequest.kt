@@ -9,9 +9,9 @@ import team.sparta.onehouronemeal.domain.user.model.v1.UserStatus
 data class SignUpRequest(
     val username: String,
     val password: String,
-    val nickname: String,
+    val nickname: String
 ) {
-    fun to(encoder: PasswordEncoder, role: String): User {
+    fun to(encoder: PasswordEncoder, role: String, imageUrl: String?): User {
         val actualRole = UserRole.valueOf(role)
 
         if (actualRole == UserRole.ADMIN) throw IllegalArgumentException("Admin cannot be created by sign up")
@@ -23,7 +23,7 @@ data class SignUpRequest(
             password = encoder.encode(password),
             role = actualRole,
             status = status,
-            profile = Profile(nickname = nickname),
+            profile = Profile(nickname = nickname, profileImageUrl = imageUrl),
         )
     }
 }

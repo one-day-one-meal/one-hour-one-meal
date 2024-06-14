@@ -6,7 +6,7 @@ import team.sparta.onehouronemeal.domain.user.model.v1.User
 data class UpdateUserRequest(
     val nickname: String
 ) {
-    fun apply(user: User) {
-        user.updateProfile(Profile(nickname))
+    fun apply(user: User, imageUrl: String?) {
+        user.updateProfile(Profile(nickname, imageUrl))
     }
 }
