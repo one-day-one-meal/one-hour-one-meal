@@ -92,11 +92,11 @@ class UserService(
         return TokenCheckResponse.from(userId, role)
     }
 
-    fun registerIfAbsentWithOAuth(info: OAuth2UserInfo): UserResponse {
+    fun registerIfAbsentWithOAuth(info: OAuth2UserInfo): SignInResponse {
         run {
             userRepository.findByProviderAndProviderId(info.provider.name, info.id)
                 ?: userRepository.save(info.to(passwordEncoder))
-        }.let { return UserResponse.from(it) }
+        }.let { return SignInResponse.from(jwtPlugin, it) }
     }
 
     fun subscribeChef(principal: UserPrincipal, chefId: Long): SubscriptionResponse {
