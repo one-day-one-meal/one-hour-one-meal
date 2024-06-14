@@ -103,6 +103,9 @@ class CourseService(
         val comments = commentRepository.findAllByCourseId(courseId)
         commentRepository.deleteAll(comments)
 
+        val thumbsUps = thumbsUpRepository.findAllByCourseId(courseId)
+        thumbsUpRepository.deleteAll(thumbsUps)
+
         courseRepository.delete(course)
     }
 
