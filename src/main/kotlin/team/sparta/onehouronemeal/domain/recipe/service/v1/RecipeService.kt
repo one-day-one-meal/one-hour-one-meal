@@ -23,13 +23,9 @@ class RecipeService(
         private const val RECIPE_NOT_FOUND = "Recipe"
     }
 
-    fun searchRecipeList(title: String): List<RecipeResponse> {
-        return recipeRepository.searchRecipeListByTitle(title).map { RecipeResponse.from(it) }
-    }
-
     fun getAllRecipeList(courseId: Long): List<RecipeResponse> {
         validateCourseExists(courseId)
-        return recipeRepository.findAllByCourseId(courseId).map { RecipeResponse.from(it) }
+        return recipeRepository.findByCourseId(courseId).map { RecipeResponse.from(it) }
     }
 
     fun getRecipeById(courseId: Long, recipeId: Long, principal: UserPrincipal): RecipeResponse {

@@ -9,12 +9,12 @@ import team.sparta.onehouronemeal.infra.querydsl.QueryDslSupport
 class RecipeRepositoryImpl : CustomRecipeRepository, QueryDslSupport() {
     val recipe = QRecipe.recipe
 
-    override fun searchRecipeListByTitle(title: String): List<Recipe> {
+    override fun findByCourseId(courseId: Long): List<Recipe> {
         return queryFactory
             .selectFrom(recipe)
             .leftJoin(recipe.course)
             .fetchJoin()
-            .where(recipe.title.containsIgnoreCase(title))
+            .where(recipe.course.id.eq(courseId))
             .fetch()
     }
 
