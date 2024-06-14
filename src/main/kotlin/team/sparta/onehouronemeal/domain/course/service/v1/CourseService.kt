@@ -1,4 +1,4 @@
-.package team.sparta.onehouronemeal.domain.course.service.v1
+package team.sparta.onehouronemeal.domain.course.service.v1
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
