@@ -5,9 +5,23 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import team.sparta.onehouronemeal.domain.user.dto.v1.*
+import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
+import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
+import team.sparta.onehouronemeal.domain.user.dto.v1.SubscriptionResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.UpdateUserRequest
+import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import team.sparta.onehouronemeal.domain.user.service.v1.UserService
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
@@ -24,6 +38,7 @@ class UserController(
         @RequestPart("request") request: SignUpRequest,
         @RequestPart("image", required = false) image: MultipartFile?
     ): ResponseEntity<UserResponse> {
+        if (request.password != request.confirmPassword) throw IllegalArgumentException("Password not matched")
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.signUp(role, request, image))
     }
 
@@ -53,6 +68,7 @@ class UserController(
         @RequestPart("request") request: UpdateUserRequest,
         @RequestPart("image", required = false) image: MultipartFile?
     ): ResponseEntity<UserResponse> {
+        if (request.password != request.confirmPassword) throw IllegalArgumentException("Password not matched")
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.updateUserProfile(userId, principal, request, image))
     }

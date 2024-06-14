@@ -4,7 +4,13 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import team.sparta.onehouronemeal.domain.user.dto.v1.*
+import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
+import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
+import team.sparta.onehouronemeal.domain.user.dto.v1.SubscriptionResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.UpdateUserRequest
+import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import team.sparta.onehouronemeal.domain.user.model.v1.Profile
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.model.v1.UserRole
@@ -13,6 +19,7 @@ import team.sparta.onehouronemeal.domain.user.model.v1.subscription.Subscription
 import team.sparta.onehouronemeal.domain.user.model.v1.subscription.SubscriptionId
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
+import team.sparta.onehouronemeal.domain.user.service.v1.passwordhistory.PasswordHistoryService
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.oauth.client.dto.OAuth2UserInfo
@@ -24,6 +31,9 @@ import team.sparta.onehouronemeal.infra.security.jwt.JwtPlugin
 class UserService(
     private val userRepository: UserRepository,
     private val subscriptionRepository: SubscriptionRepository,
+
+    private val passwordHistoryService: PasswordHistoryService,
+
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin,
     private val s3FileManagement: S3FileManagement
@@ -37,7 +47,9 @@ class UserService(
 
         check(!userRepository.existsByUsername(request.username)) { "Username already in use" }
 
-        return request.to(passwordEncoder, role, imageFileUrl).let { userRepository.save(it) }
+        return request.to(passwordEncoder, role, imageFileUrl)
+            .let { userRepository.save(it) }
+            .also { passwordHistoryService.savePasswordHistory(it) }
             .let { UserResponse.from(it) }
     }
 
@@ -73,9 +85,13 @@ class UserService(
             s3FileManagement.getUrl(imageFileName)
         } else null
 
-        return userRepository.findById(userId)?.also { checkPermission(it, principal) }
-            ?.also { request.apply(it, imageFileUrl) }
-            ?.let { UserResponse.from(it) } ?: throw ModelNotFoundException("User not found with id", userId)
+        return userRepository.findById(userId)
+            ?.also { checkPermission(it, principal) }
+            ?.also { passwordHistoryService.checkPasswordChange(it.id!!, request.password) }
+            ?.also { request.apply(passwordEncoder, it, imageFileUrl) }
+            ?.also { passwordHistoryService.savePasswordHistory(it) }
+            ?.let { UserResponse.from(it) }
+            ?: throw ModelNotFoundException("User not found with id", userId)
     }
 
     @Transactional

@@ -20,8 +20,8 @@ class User(
     val username: String,
 
     @Column(name = "password")
-    @Size(max = 60)
-    val password: String,
+    @Size(max = 50)
+    var password: String,
 
     @Embedded
     var profile: Profile,
@@ -48,6 +48,10 @@ class User(
 
     fun checkPermission(userId: Long, role: String): Boolean {
         return this.id == userId || role == "ROLE_ADMIN"
+    }
+
+    fun updatePassword(password: String) {
+        this.password = password
     }
 
     fun updateProfile(profile: Profile) {
