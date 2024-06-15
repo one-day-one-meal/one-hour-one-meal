@@ -10,12 +10,12 @@ data class CourseResponse(
     val title: String,
     val describe: String,
     val status: String,
-    val thumbsUpCount: Int,
+    val thumbsUpCount: Long,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
 ) {
     companion object {
-        fun from(course: Course, thumbsUpCount: Int): CourseResponse {
+        fun from(course: Course, thumbsUpCount: Long = 0): CourseResponse {
             return CourseResponse(
                 id = course.id!!,
                 user = UserResponse.from(course.user),

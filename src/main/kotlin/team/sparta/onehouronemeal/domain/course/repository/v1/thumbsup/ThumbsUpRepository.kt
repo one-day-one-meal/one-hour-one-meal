@@ -7,6 +7,7 @@ import team.sparta.onehouronemeal.domain.course.model.v1.thumbsup.ThumbsUpId
 
 @Repository
 interface ThumbsUpRepository : JpaRepository<ThumbsUp, ThumbsUpId> {
-    fun countByCourseId(courseId: Long): Int
+    fun countByCourseId(courseId: Long): Long
     fun findAllByCourseId(courseId: Long): List<ThumbsUp>
+    fun deleteAllByCourseId(courseId: Long)
 }

@@ -37,8 +37,8 @@ class AdminService(
         user.changeStatus(UserStatus.DENIED)
     }
 
-    fun getPendingCourseList(): List<PendingCourseResponse>? {
-        return courseRepository.findAllByStatusIsOrderByCreatedAtDesc(CourseStatus.PENDING)
+    fun getPendingCourseList(): List<PendingCourseResponse> {
+        return courseRepository.findAllPendingCourse()
             .map { PendingCourseResponse.from(it) }
     }
 
