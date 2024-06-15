@@ -93,7 +93,11 @@ class UserService(
                 }
             }
             ?.also { request.apply(passwordEncoder, it, imageFileUrl) }
-            ?.also { passwordHistoryService.savePasswordHistory(it) }
+            ?.also {
+                if (request.password.isNotEmpty()) {
+                    passwordHistoryService.savePasswordHistory(it)
+                }
+            }
             ?.let { UserResponse.from(it) }
             ?: throw ModelNotFoundException("User not found with id", userId)
     }
