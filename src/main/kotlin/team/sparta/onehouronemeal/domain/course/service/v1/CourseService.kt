@@ -16,7 +16,6 @@ import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.course.repository.v1.thumbsup.ThumbsUpRepository
 import team.sparta.onehouronemeal.domain.recipe.dto.v1.RecipeResponse
 import team.sparta.onehouronemeal.domain.recipe.repository.v1.RecipeRepository
-import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
 import team.sparta.onehouronemeal.exception.AccessDeniedException
@@ -36,35 +35,13 @@ class CourseService(
     fun getCourseList(): List<CourseResponse> {
         val (openCourseListWithUser, countList) = courseRepository.searchOpenCourseListWithThumbsUpCount()
 
-        return openCourseListWithUser.zip(countList) { a, b ->
-            CourseResponse(
-                id = a.id!!,
-                title = a.title,
-                user = UserResponse.from(a.user),
-                describe = a.describe,
-                status = a.status.name,
-                thumbsUpCount = b,
-                createdAt = a.createdAt,
-                updatedAt = a.updatedAt
-            )
-        }
+        return openCourseListWithUser.zip(countList) { a, b -> CourseResponse.from(a, b) }
     }
 
     fun getCourseListBySubscribedChefs(principal: UserPrincipal): List<CourseResponse> {
         val (openCourseListBySubscribedChefs, countList) = courseRepository.getOpenCourseListBySubscribedChefs(principal)
 
-        return openCourseListBySubscribedChefs.zip(countList) { a, b ->
-            CourseResponse(
-                id = a.id!!,
-                title = a.title,
-                user = UserResponse.from(a.user),
-                describe = a.describe,
-                status = a.status.name,
-                thumbsUpCount = b,
-                createdAt = a.createdAt,
-                updatedAt = a.updatedAt
-            )
-        }
+        return openCourseListBySubscribedChefs.zip(countList) { a, b -> CourseResponse.from(a, b) }
     }
 
     @Transactional(readOnly = true)
@@ -82,7 +59,8 @@ class CourseService(
             course,
             thumbsUpRepository.thumbsUpCount(course.id!!),
             recipeList.map { RecipeResponse.from(it) },
-            commentList.map { CommentResponse.from(it) })
+            commentList.map { CommentResponse.from(it) }
+        )
     }
 
     fun createCourse(principal: UserPrincipal, request: CreateCourseRequest): CourseResponse {
