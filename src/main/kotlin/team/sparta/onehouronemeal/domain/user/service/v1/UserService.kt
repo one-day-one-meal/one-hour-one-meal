@@ -87,7 +87,11 @@ class UserService(
 
         return userRepository.findById(userId)
             ?.also { checkPermission(it, principal) }
-            ?.also { passwordHistoryService.checkPasswordChange(it.id!!, request.password) }
+            ?.also {
+                if (request.password.isNotEmpty()) {
+                    passwordHistoryService.checkPasswordChange(it.id!!, request.password)
+                }
+            }
             ?.also { request.apply(passwordEncoder, it, imageFileUrl) }
             ?.also { passwordHistoryService.savePasswordHistory(it) }
             ?.let { UserResponse.from(it) }
