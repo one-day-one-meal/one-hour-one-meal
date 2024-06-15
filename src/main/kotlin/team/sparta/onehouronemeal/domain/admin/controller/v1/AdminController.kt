@@ -65,4 +65,10 @@ class AdminController(
         adminService.rejectReport(reportId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
+
+    @PatchMapping("/reports/{reportId}")
+    fun acceptReport(@PathVariable reportId: Long): ResponseEntity<Unit> {
+        adminService.acceptReport(reportId)
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
 }
