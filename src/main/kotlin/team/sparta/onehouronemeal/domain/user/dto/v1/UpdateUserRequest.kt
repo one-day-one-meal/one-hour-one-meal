@@ -11,6 +11,8 @@ data class UpdateUserRequest(
 ) {
     fun apply(encoder: PasswordEncoder, user: User, imageUrl: String?) {
         user.updateProfile(Profile(nickname, imageUrl))
-        user.updatePassword(encoder.encode(password))
+        if (password.isNotEmpty() && password == confirmPassword) {
+            user.updatePassword(encoder.encode(password))
+        }
     }
 }
