@@ -72,7 +72,7 @@ class User(
         this.validate()
     }
 
-    fun validate() {
+    private fun validate() {
         require(username.length < 30) { "Username must be less than 30 characters" }
         require(password.length < 50) { "Password must be less than 50 characters" }
         require(provider == null || provider!!.length < 20) { "Provider must be less than 20 characters" }
