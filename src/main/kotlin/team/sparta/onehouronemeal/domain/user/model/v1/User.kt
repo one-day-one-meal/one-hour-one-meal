@@ -52,13 +52,26 @@ class User(
 
     fun updatePassword(password: String) {
         this.password = password
+
+        this.validate()
     }
 
     fun updateProfile(profile: Profile) {
         this.profile = profile
+
+        this.validate()
     }
 
     fun changeStatus(status: UserStatus) {
         this.status = status
+
+        this.validate()
+    }
+
+    fun validate() {
+        require(username.length < 30)
+        require(password.length < 50)
+        require(provider == null || provider!!.length < 20)
+        require(providerId == null || providerId!!.length < 255)
     }
 }

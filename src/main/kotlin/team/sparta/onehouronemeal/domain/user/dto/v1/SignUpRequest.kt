@@ -36,6 +36,6 @@ data class SignUpRequest(
             role = actualRole,
             status = status,
             profile = Profile(nickname = nickname, profileImageUrl = imageUrl),
-        )
+        ).apply { validate() }
     }
 }

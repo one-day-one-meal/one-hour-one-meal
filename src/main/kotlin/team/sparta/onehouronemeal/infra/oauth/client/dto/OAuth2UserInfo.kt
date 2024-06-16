@@ -22,7 +22,7 @@ open class OAuth2UserInfo(
                 nickname = nickname,
                 profileImageUrl = profileImageUrl,
             ),
-        )
+        ).apply { validate() }
     }
 
     private fun generateUsername(seed: Long): String {
