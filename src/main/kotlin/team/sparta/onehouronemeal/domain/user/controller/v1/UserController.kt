@@ -51,8 +51,8 @@ class UserController(
     }
 
     @PostMapping("/auth/sign-out")
-    fun signOutUser(): ResponseEntity<Unit> {
-        userService.signOut()
+    fun signOutUser(@AuthenticationPrincipal principal: UserPrincipal): ResponseEntity<Unit> {
+        userService.signOut(principal)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 

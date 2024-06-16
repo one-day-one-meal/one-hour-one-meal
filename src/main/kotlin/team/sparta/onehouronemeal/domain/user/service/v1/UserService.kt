@@ -68,8 +68,8 @@ class UserService(
     }
 
     @Transactional
-    fun signOut() {
-        TODO("추후 Refresh token 관련 로직과 함께 구현")
+    fun signOut(principal: UserPrincipal) {
+        refreshTokenService.deleteRefreshToken(principal.id)
     }
 
     fun getUserProfile(userId: Long, principal: UserPrincipal): UserResponse {
