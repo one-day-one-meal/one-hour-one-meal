@@ -1,5 +1,6 @@
 package team.sparta.onehouronemeal.domain.recipe.controller.v1
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -39,7 +40,7 @@ class RecipeController(
     @PostMapping
     fun createRecipe(
         @PathVariable courseId: Long,
-        @RequestBody request: CreateRecipeRequest,
+        @Valid @RequestBody request: CreateRecipeRequest,
         @AuthenticationPrincipal principal: UserPrincipal
     ): RecipeResponse {
         return recipeService.createRecipe(courseId, request, principal)
@@ -49,7 +50,7 @@ class RecipeController(
     fun updateRecipe(
         @PathVariable courseId: Long,
         @PathVariable recipeId: Long,
-        @RequestBody updateRecipeRequest: UpdateRecipeRequest,
+        @Valid @RequestBody updateRecipeRequest: UpdateRecipeRequest,
         @AuthenticationPrincipal principal: UserPrincipal
     ): ResponseEntity<RecipeResponse> {
         return ResponseEntity.status(HttpStatus.OK)

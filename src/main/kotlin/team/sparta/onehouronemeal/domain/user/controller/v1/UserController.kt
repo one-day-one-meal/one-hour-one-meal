@@ -1,6 +1,7 @@
 package team.sparta.onehouronemeal.domain.user.controller.v1
 
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -35,7 +36,7 @@ class UserController(
     )
     fun signUpUser(
         @PathVariable role: String,
-        @RequestPart("request") request: SignUpRequest,
+        @Valid @RequestPart("request") request: SignUpRequest,
         @RequestPart("image", required = false) image: MultipartFile?
     ): ResponseEntity<UserResponse> {
         if (request.password != request.confirmPassword) throw IllegalArgumentException("Password not matched")
@@ -65,7 +66,7 @@ class UserController(
     fun updateUserProfile(
         @PathVariable userId: Long,
         @AuthenticationPrincipal principal: UserPrincipal,
-        @RequestPart("request") request: UpdateUserRequest,
+        @Valid @RequestPart("request") request: UpdateUserRequest,
         @RequestPart("image", required = false) image: MultipartFile?
     ): ResponseEntity<UserResponse> {
         if (request.password != request.confirmPassword) throw IllegalArgumentException("Password not matched")
