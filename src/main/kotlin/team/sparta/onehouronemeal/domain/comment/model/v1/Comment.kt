@@ -29,11 +29,21 @@ class Comment(
 
     var content: String,
 ) : BaseTimeEntity() {
+    init {
+        this.validate()
+    }
+
     fun checkPermission(userId: Long, role: String): Boolean {
         return this.user.id == userId || role == "ROLE_ADMIN"
     }
 
     fun updateComment(content: String) {
         this.content = content
+        
+        this.validate()
+    }
+
+    private fun validate() {
+        require(content.length <= 1000) { "Content must be less than 1000 characters" }
     }
 }
