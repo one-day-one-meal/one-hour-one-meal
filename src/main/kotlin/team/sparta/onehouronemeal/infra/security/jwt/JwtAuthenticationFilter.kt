@@ -32,6 +32,12 @@ class JwtAuthenticationFilter(
                 .onSuccess {
                     val userId = it.payload.subject.toLong()
                     val role = it.payload.get("role", String::class.java)
+                    val type = it.payload.get("type", String::class.java)
+
+                    if (type != JwtPlugin.ACCESS_TOKEN_TYPE) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token type")
+                        return
+                    }
 
                     val principal = UserPrincipal(
                         id = userId,
