@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
@@ -23,12 +24,14 @@ import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.UpdateUserRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import team.sparta.onehouronemeal.domain.user.service.v1.UserService
+import team.sparta.onehouronemeal.domain.user.service.v1.refreshtoken.RefreshTokenService
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
 @RestController
 @RequestMapping("/api/v1")
 class UserController(
-    val userService: UserService
+    val userService: UserService,
+    val refreshTokenService: RefreshTokenService
 ) {
     @PostMapping(
         "/auth/sign-up/{role}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
@@ -51,6 +54,15 @@ class UserController(
     fun signOutUser(): ResponseEntity<Unit> {
         userService.signOut()
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    @PostMapping("/auth/refresh-token")
+    fun refreshAccessToken(@RequestHeader("RefreshToken") refreshToken: String): ResponseEntity<SignInResponse> {
+        if (!refreshTokenService.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(refreshTokenService.refreshAccessToken(refreshToken))
     }
 
     @GetMapping("/users/{userId}/profiles")
