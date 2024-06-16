@@ -9,6 +9,7 @@ import team.sparta.onehouronemeal.domain.user.model.v1.UserStatus
 data class SignUpRequest(
     val username: String,
     val password: String,
+    val confirmPassword: String,
     val nickname: String
 ) {
     fun to(encoder: PasswordEncoder, role: String, imageUrl: String?): User {
