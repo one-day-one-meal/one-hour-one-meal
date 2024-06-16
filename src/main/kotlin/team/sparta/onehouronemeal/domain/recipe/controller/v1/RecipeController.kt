@@ -39,10 +39,10 @@ class RecipeController(
     @PostMapping
     fun createRecipe(
         @PathVariable courseId: Long,
-        @RequestBody createRecipeRequest: CreateRecipeRequest
-    ): ResponseEntity<RecipeResponse> {
-        val result = recipeService.createRecipe(courseId, createRecipeRequest)
-        return ResponseEntity.status(HttpStatus.CREATED).body(result)
+        @RequestBody request: CreateRecipeRequest,
+        @AuthenticationPrincipal principal: UserPrincipal
+    ): RecipeResponse {
+        return recipeService.createRecipe(courseId, request, principal)
     }
 
     @PutMapping("/{recipeId}")

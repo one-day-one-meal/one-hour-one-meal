@@ -36,9 +36,12 @@ class RecipeService(
         return RecipeResponse.from(recipe)
     }
 
-    fun createRecipe(courseId: Long, request: CreateRecipeRequest): RecipeResponse {
+    fun createRecipe(courseId: Long, request: CreateRecipeRequest, principal: UserPrincipal): RecipeResponse {
         val course =
             courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException(COURSE_NOT_FOUND, courseId)
+        if (!course.checkPermission(principal.id, principal.role)) {
+            throw AccessDeniedException("You do not have permission to add a recipe to this course")
+        }
         val recipe = Recipe(
             course = course,
             title = request.title,
