@@ -24,7 +24,7 @@ data class RefreshToken(
     @Column(name = "refresh_token", nullable = false)
     var refreshToken: String,
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @MapsId
     @JoinColumn(name = "user_id")
     val user: User
