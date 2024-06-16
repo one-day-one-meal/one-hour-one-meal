@@ -43,7 +43,15 @@ class Report(
     @Column(nullable = true, updatable = true)
     var deletedAt: LocalDateTime? = null,
 ) : BaseTimeEntity() {
+    init {
+        this.validate()
+    }
+
     fun changeStatus(status: ReportStatus) {
         this.status = status
+    }
+
+    private fun validate() {
+        require(describe.length <= 1000) { "Describe must be less than 1000 characters" }
     }
 }
