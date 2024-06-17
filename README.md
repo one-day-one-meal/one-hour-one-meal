@@ -50,6 +50,12 @@
 
 <br/>
 
+## :cocktail: <strong>Wire frame</strong>
+
+![Wire frame](/readme_assets/wire_frame.png)
+
+<br/>
+
 ## :card_index_dividers: <strong>API 명세서</strong>
 
 ![API Docs](/readme_assets/API_docs.png)
@@ -58,7 +64,7 @@
 
 ## :card_file_box: <strong>ERD</strong>
 
-![API Docs](/readme_assets/ERD.png)
+![ERD](/readme_assets/ERD.png)
 
 <br/>
 
