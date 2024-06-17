@@ -29,7 +29,7 @@ class Report(
 
     @JoinColumn(name = "comment_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    val comment: Comment? = null,
+    val comment: Comment,
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)

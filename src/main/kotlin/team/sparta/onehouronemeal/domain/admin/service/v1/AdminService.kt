@@ -74,6 +74,6 @@ class AdminService(
     fun acceptReport(reportId: Long) {
         val report = reportRepository.findByIdOrNull(reportId) ?: throw ModelNotFoundException("report", reportId)
         report.changeStatus(ReportStatus.ACCEPTED)
-        report.comment?.let { commentRepository.delete(it) }
+        commentRepository.delete(report.comment)
     }
 }

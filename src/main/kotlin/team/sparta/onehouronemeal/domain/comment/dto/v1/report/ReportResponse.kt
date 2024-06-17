@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class ReportResponse(
     val id: Long,
-    val commentId: Long?,
+    val commentId: Long,
     val userId: Long,
     val describe: String,
     val createdAt: LocalDateTime?,
@@ -14,7 +14,7 @@ data class ReportResponse(
         fun from(report: Report): ReportResponse {
             return ReportResponse(
                 id = report.id!!,
-                commentId = report.comment?.id,
+                commentId = report.comment.id!!,
                 userId = report.user.id!!,
                 describe = report.describe,
                 createdAt = report.createdAt,
