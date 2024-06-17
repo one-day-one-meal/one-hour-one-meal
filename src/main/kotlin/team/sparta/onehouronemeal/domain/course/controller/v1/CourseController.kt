@@ -1,5 +1,6 @@
 package team.sparta.onehouronemeal.domain.course.controller.v1
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -43,7 +44,8 @@ class CourseController(
 
     @PostMapping
     fun createCourse(
-        @AuthenticationPrincipal principal: UserPrincipal, @RequestBody request: CreateCourseRequest
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @Valid @RequestBody request: CreateCourseRequest
     ): ResponseEntity<CourseResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(principal, request))
     }
@@ -52,7 +54,7 @@ class CourseController(
     fun updateCourse(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable courseId: Long,
-        @RequestBody request: UpdateCourseRequest
+        @Valid @RequestBody request: UpdateCourseRequest
     ): ResponseEntity<CourseResponse> {
         return ResponseEntity.ok(courseService.updateCourse(principal, courseId, request))
     }

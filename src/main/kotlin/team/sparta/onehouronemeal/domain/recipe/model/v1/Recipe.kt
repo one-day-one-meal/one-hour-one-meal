@@ -21,7 +21,15 @@ class Recipe(
     var describe: String,
     var videoUrl: String?,
 ) : BaseTimeEntity() {
+    init {
+        this.validate()
+    }
+    
     fun checkPermission(userId: Long, role: String): Boolean {
         return this.id == userId || role == "ROLE_ADMIN"
+    }
+
+    private fun validate() {
+        require(title.length <= 30) { "Title must be less than 30 characters" }
     }
 }
