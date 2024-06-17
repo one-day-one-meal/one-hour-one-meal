@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import team.sparta.onehouronemeal.domain.user.dto.v1.RefreshResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
@@ -57,7 +58,7 @@ class UserController(
     }
 
     @PostMapping("/auth/refresh-token")
-    fun refreshAccessToken(@RequestHeader("RefreshToken") refreshToken: String): ResponseEntity<SignInResponse> {
+    fun refreshAccessToken(@RequestHeader("RefreshToken") refreshToken: String): ResponseEntity<RefreshResponse> {
         if (!refreshTokenService.validateRefreshToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }

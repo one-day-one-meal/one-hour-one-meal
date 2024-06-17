@@ -17,10 +17,6 @@ class RefreshTokenRepositoryImpl(
             ?: refreshTokenJpaRepository.save(refreshToken)
     }
 
-    override fun updateTokenByUserId(userId: Long, newToken: String) {
-        refreshTokenJpaRepository.findByUserId(userId)?.updateToken(newToken)
-    }
-
     override fun deleteTokenByUserId(userId: Long) {
         refreshTokenJpaRepository.deleteByUserId(userId)
     }

@@ -3,7 +3,7 @@ package team.sparta.onehouronemeal.domain.user.service.v1.refreshtoken
 import io.jsonwebtoken.Claims
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
+import team.sparta.onehouronemeal.domain.user.dto.v1.RefreshResponse
 import team.sparta.onehouronemeal.domain.user.model.v1.User
 import team.sparta.onehouronemeal.domain.user.model.v1.refreshtoken.RefreshToken
 import team.sparta.onehouronemeal.domain.user.repository.v1.refreshtoken.RefreshTokenRepository
@@ -19,7 +19,7 @@ class RefreshTokenService(
     }
 
     @Transactional
-    fun refreshAccessToken(refreshToken: String): SignInResponse {
+    fun refreshAccessToken(refreshToken: String): RefreshResponse {
         return getValidatedPayload(refreshToken)
             .run {
                 val userId = subject.toLong()
@@ -27,13 +27,8 @@ class RefreshTokenService(
                 userId to role
             }
             .also { (userId, _) -> checkRefreshToken(userId, refreshToken) }
-            .let { (userId, role) -> generateNewTokens(userId, role) }
-            .let { (accessToken, refreshToken) ->
-                SignInResponse(
-                    accessToken = accessToken,
-                    refreshToken = refreshToken
-                )
-            }
+            .let { (userId, role) -> generateNewToken(userId, role) }
+            .let { RefreshResponse(accessToken = it) }
     }
 
     fun updateRefreshToken(token: String, user: User) {
@@ -66,12 +61,10 @@ class RefreshTokenService(
         }
     }
 
-    private fun generateNewTokens(userId: Long, role: String): Pair<String, String> {
+    private fun generateNewToken(userId: Long, role: String): String {
         val accessToken = jwtPlugin.generateAccessToken(userId.toString(), role)
-        val refreshToken = jwtPlugin.generateRefreshToken(userId.toString(), role)
-        refreshTokenRepository.updateTokenByUserId(userId, refreshToken)
 
-        return accessToken to refreshToken
+        return accessToken
     }
 }
 
