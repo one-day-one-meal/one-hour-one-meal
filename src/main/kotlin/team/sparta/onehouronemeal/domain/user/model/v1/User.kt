@@ -46,19 +46,36 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
+    init {
+        this.validate()
+    }
+
     fun checkPermission(userId: Long, role: String): Boolean {
         return this.id == userId || role == "ROLE_ADMIN"
     }
 
     fun updatePassword(password: String) {
         this.password = password
+
+        this.validate()
     }
 
     fun updateProfile(profile: Profile) {
         this.profile = profile
+
+        this.validate()
     }
 
     fun changeStatus(status: UserStatus) {
         this.status = status
+
+        this.validate()
+    }
+
+    private fun validate() {
+        require(username.length < 30) { "Username must be less than 30 characters" }
+        require(password.length < 50) { "Password must be less than 50 characters" }
+        require(provider == null || provider!!.length < 20) { "Provider must be less than 20 characters" }
+        require(providerId == null || providerId!!.length < 255) { "ProviderId must be less than 255 characters" }
     }
 }

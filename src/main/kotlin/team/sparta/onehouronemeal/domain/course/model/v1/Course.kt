@@ -29,6 +29,10 @@ class Course(
     @ManyToOne(fetch = FetchType.LAZY) var user: User
 
 ) : BaseTimeEntity() {
+    init {
+        this.validate()
+    }
+
     fun checkPermission(userId: Long, role: String): Boolean {
         return user.id == userId || role == "ROLE_ADMIN"
     }
@@ -38,9 +42,15 @@ class Course(
     fun updateCourse(title: String, describe: String) {
         this.title = title
         this.describe = describe
+
+        this.validate()
     }
 
     fun changeStatus(status: CourseStatus) {
         this.status = status
+    }
+
+    private fun validate() {
+        require(title.length <= 30) { "Title must be less than 30 characters" }
     }
 }
