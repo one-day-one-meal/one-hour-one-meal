@@ -133,18 +133,24 @@
 
 ## :clipboard: 요구사항에 따라 제작한 프로젝트 주요 기능
 
-+ 프로젝트 기능 1
-    + 프로젝트 기능 설명
-+ 프로젝트 기능 2
-    + 프로젝트 기능 설명
-+ 프로젝트 기능 3
-    + 프로젝트 기능 설명
-+ 프로젝트 기능 4
-    + 프로젝트 기능 설명
-+ 프로젝트 기능 5
-    + 프로젝트 기능 설명
-+ 프로젝트 기능 6
-    + 프로젝트 기능 설명
++ JWT + Security Filter를 통한 기본 인증
+    + 특정 도메인을 제외하고 기본적으로 Authorization header를 통해 Access token을 검증합니다.
+    + Claim엔 id, role, 토큰의 type을 담고 있어 Refresh token으로는 인증이 불가능합니다.
++ 이전 비밀번호 체크
+    + 최근 비밀번호 3회에 대한 테이블을 따로 구성해 offset, limit을 통한 쿼리로 3회를 체크, 저장합니다
++ 리프레쉬 토큰 관리
+    + 로그아웃 및 재발급의 수동 관리를 위해 Stateless의 장점을 약간 포기하고 Refresh token 테이블을 별도로 관리합니다.
+    + 1:1로 유저와 맵핑되어 있습니다.
++ 구독 관리
+    + 유저의 구독(팔로잉) 정보를 저장하고 이후 구독 목록 조회, 구독한 쉐프의 강의 조회가 가능합니다.
+    + 유저와 쉐프를 외래키로 사용하는 복합키 테이블입니다.
++ 카카오 / Naver 소셜 로그인
+    + 소셜 로그인 진행시 유저 테이블에 Provider로 구분해 회원가입 / 로그인 처리를 진행합니다.
++ Query 최적화를 위한 QueryDSL 사용
+    + <a href="/readme_assets/recipe_fetch_join_single.png">Recipe 최적화1</a> <a href="/readme_assets/recipe_fetch_join_list.png">Recipe 최적화2</a>
+    + 유저와 쉐프를 외래키로 사용하는 복합키 테이블입니다.
++ 댓글 + 댓글 신고 기능
+  + 신고의 정책을 위해 soft delete 를 활용하여 admin이 신고 내역을 관리합니다.
 
 <br/>
 
