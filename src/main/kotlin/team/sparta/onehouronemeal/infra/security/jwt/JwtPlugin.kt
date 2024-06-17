@@ -18,6 +18,10 @@ class JwtPlugin(
     @Value("\${auth.jwt.accessTokenExpirationHour}") private val accessTokenExpirationHour: Long,
     @Value("\${auth.jwt.refreshTokenExpirationHour}") private val refreshTokenExpirationHour: Long,
 ) {
+    companion object {
+        const val ACCESS_TOKEN_TYPE = "access"
+        const val REFRESH_TOKEN_TYPE = "refresh"
+    }
 
     fun validateToken(jwt: String): Result<Jws<Claims>> {
         return kotlin.runCatching {
@@ -27,15 +31,15 @@ class JwtPlugin(
     }
 
     fun generateAccessToken(subject: String, role: String): String {
-        return generateToken(subject, role, Duration.ofHours(accessTokenExpirationHour))
+        return generateToken(subject, role, ACCESS_TOKEN_TYPE, Duration.ofHours(accessTokenExpirationHour))
     }
 
     fun generateRefreshToken(subject: String, role: String): String {
-        return generateToken(subject, role, Duration.ofHours(refreshTokenExpirationHour))
+        return generateToken(subject, role, REFRESH_TOKEN_TYPE, Duration.ofHours(refreshTokenExpirationHour))
     }
 
-    private fun generateToken(subject: String, role: String, expirationPeriod: Duration): String {
-        val claims: Claims = Jwts.claims().add(mapOf("role" to role)).build()
+    private fun generateToken(subject: String, role: String, type: String, expirationPeriod: Duration): String {
+        val claims: Claims = Jwts.claims().add(mapOf("role" to role, "type" to type)).build()
 
         val now = Instant.now()
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))

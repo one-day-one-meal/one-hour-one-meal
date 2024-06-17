@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import team.sparta.onehouronemeal.domain.user.dto.v1.RefreshResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignInResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.SignUpRequest
@@ -24,12 +26,14 @@ import team.sparta.onehouronemeal.domain.user.dto.v1.TokenCheckResponse
 import team.sparta.onehouronemeal.domain.user.dto.v1.UpdateUserRequest
 import team.sparta.onehouronemeal.domain.user.dto.v1.UserResponse
 import team.sparta.onehouronemeal.domain.user.service.v1.UserService
+import team.sparta.onehouronemeal.domain.user.service.v1.refreshtoken.RefreshTokenService
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
 
 @RestController
 @RequestMapping("/api/v1")
 class UserController(
-    val userService: UserService
+    val userService: UserService,
+    val refreshTokenService: RefreshTokenService
 ) {
     @PostMapping(
         "/auth/sign-up/{role}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
@@ -49,9 +53,18 @@ class UserController(
     }
 
     @PostMapping("/auth/sign-out")
-    fun signOutUser(): ResponseEntity<Unit> {
-        userService.signOut()
+    fun signOutUser(@AuthenticationPrincipal principal: UserPrincipal): ResponseEntity<Unit> {
+        userService.signOut(principal)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    @PostMapping("/auth/refresh-token")
+    fun refreshAccessToken(@RequestHeader("RefreshToken") refreshToken: String): ResponseEntity<RefreshResponse> {
+        if (!refreshTokenService.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(refreshTokenService.refreshAccessToken(refreshToken))
     }
 
     @GetMapping("/users/{userId}/profiles")
