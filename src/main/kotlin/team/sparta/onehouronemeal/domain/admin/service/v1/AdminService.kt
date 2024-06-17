@@ -4,6 +4,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportResponse
+import team.sparta.onehouronemeal.domain.comment.model.v1.CommentStatus
 import team.sparta.onehouronemeal.domain.comment.model.v1.report.ReportStatus
 import team.sparta.onehouronemeal.domain.comment.repository.v1.CommentRepository
 import team.sparta.onehouronemeal.domain.comment.repository.v1.report.ReportRepository
@@ -74,6 +75,7 @@ class AdminService(
     fun acceptReport(reportId: Long) {
         val report = reportRepository.findByIdOrNull(reportId) ?: throw ModelNotFoundException("report", reportId)
         report.changeStatus(ReportStatus.ACCEPTED)
-        commentRepository.delete(report.comment)
+        val comment = commentRepository.findByIdOrNull(reportId) ?: throw ModelNotFoundException("comment", reportId)
+        comment.changeStatus(CommentStatus.BLOCKED)
     }
 }
