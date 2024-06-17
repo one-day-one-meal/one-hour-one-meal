@@ -38,27 +38,27 @@
 
 ## :handshake: <strong>협업 도구</strong>
 
-<img src="https://img.shields.io/badge/Git-F05032?style=plastic&logo=git&logoColor=white"/>
+<img alt="Git" src="https://img.shields.io/badge/Git-F05032?style=plastic&logo=git&logoColor=white"/>
 
-<img src="https://img.shields.io/badge/GitHub-181717?style=plastic&logo=github&logoColor=white"/>
+<img alt="GitHub" src="https://img.shields.io/badge/GitHub-181717?style=plastic&logo=github&logoColor=white"/>
 
-<img src="https://img.shields.io/badge/Slack-4A154B?style=plastic&logo=slack&logoColor=white"/>
+<img alt="Slack" src="https://img.shields.io/badge/Slack-4A154B?style=plastic&logo=slack&logoColor=white"/>
 
 ## :cocktail: <strong>Event storming</strong>
 
-이미지 추가
+![Event storming](/readme_assets/event_storming.png)
 
 <br/>
 
 ## :card_index_dividers: <strong>API 명세서</strong>
 
-이미지 or 링크 추가
+![API Docs](/readme_assets/API_docs.png)
 
 <br/>
 
 ## :card_file_box: <strong>ERD</strong>
 
-ERD 이미지 추가
+![API Docs](/readme_assets/ERD.png)
 
 <br/>
 
