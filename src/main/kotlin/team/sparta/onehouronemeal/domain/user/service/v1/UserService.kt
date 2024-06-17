@@ -20,6 +20,7 @@ import team.sparta.onehouronemeal.domain.user.model.v1.subscription.Subscription
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
 import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
 import team.sparta.onehouronemeal.domain.user.service.v1.passwordhistory.PasswordHistoryService
+import team.sparta.onehouronemeal.domain.user.service.v1.refreshtoken.RefreshTokenService
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.oauth.client.dto.OAuth2UserInfo
@@ -33,6 +34,7 @@ class UserService(
     private val subscriptionRepository: SubscriptionRepository,
 
     private val passwordHistoryService: PasswordHistoryService,
+    private val refreshTokenService: RefreshTokenService,
 
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin,
@@ -57,13 +59,17 @@ class UserService(
     fun signIn(request: SignInRequest): SignInResponse {
         return userRepository.findByUsername(request.username)
             ?.also { check(passwordEncoder.matches(request.password, it.password)) { "Password not matched" } }
-            ?.let { SignInResponse.from(jwtPlugin, it) }
+            ?.let {
+                val response = SignInResponse.from(jwtPlugin, it)
+                refreshTokenService.updateRefreshToken(response.refreshToken, it)
+                return response
+            }
             ?: throw IllegalArgumentException("User not found with username")
     }
 
     @Transactional
-    fun signOut() {
-        TODO("추후 Refresh token 관련 로직과 함께 구현")
+    fun signOut(principal: UserPrincipal) {
+        refreshTokenService.deleteRefreshToken(principal.id)
     }
 
     fun getUserProfile(userId: Long, principal: UserPrincipal): UserResponse {
@@ -122,10 +128,14 @@ class UserService(
     }
 
     fun registerIfAbsentWithOAuth(info: OAuth2UserInfo): SignInResponse {
-        return run {
+        run {
             userRepository.findByProviderAndProviderId(info.provider.name, info.id)
                 ?: userRepository.save(info.to(passwordEncoder))
-        }.let { SignInResponse.from(jwtPlugin, it) }
+        }.let {
+            val response = SignInResponse.from(jwtPlugin, it)
+            refreshTokenService.updateRefreshToken(response.refreshToken, it)
+            return response
+        }
     }
 
     fun subscribeChef(principal: UserPrincipal, chefId: Long): SubscriptionResponse {

@@ -1,14 +1,6 @@
 package team.sparta.onehouronemeal.domain.user.model.v1
 
-import jakarta.persistence.Column
-import jakarta.persistence.Embedded
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import jakarta.validation.constraints.Size
 import team.sparta.onehouronemeal.domain.common.BaseTimeEntity
 
@@ -16,11 +8,11 @@ import team.sparta.onehouronemeal.domain.common.BaseTimeEntity
 @Table(name = "app_user")
 class User(
     @Column(name = "username", unique = true)
-    @Size(max = 30)
+    @Size(max = 100)
     val username: String,
 
     @Column(name = "password")
-    @Size(max = 50)
+    @Size(max = 100)
     var password: String,
 
     @Embedded
@@ -73,8 +65,8 @@ class User(
     }
 
     private fun validate() {
-        require(username.length < 30) { "Username must be less than 30 characters" }
-        require(password.length < 50) { "Password must be less than 50 characters" }
+        require(username.length < 100) { "Username must be less than 100 characters" }
+        require(password.length < 100) { "Password must be less than 100 characters" }
         require(provider == null || provider!!.length < 20) { "Provider must be less than 20 characters" }
         require(providerId == null || providerId!!.length < 255) { "ProviderId must be less than 255 characters" }
     }

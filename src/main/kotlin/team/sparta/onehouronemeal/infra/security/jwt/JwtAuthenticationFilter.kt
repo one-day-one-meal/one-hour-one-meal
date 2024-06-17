@@ -1,5 +1,6 @@
 package team.sparta.onehouronemeal.infra.security.jwt
 
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -31,6 +32,12 @@ class JwtAuthenticationFilter(
                 .onSuccess {
                     val userId = it.payload.subject.toLong()
                     val role = it.payload.get("role", String::class.java)
+                    val type = it.payload.get("type", String::class.java)
+
+                    if (type != JwtPlugin.ACCESS_TOKEN_TYPE) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token type")
+                        return
+                    }
 
                     val principal = UserPrincipal(
                         id = userId,
@@ -43,6 +50,19 @@ class JwtAuthenticationFilter(
                     )
 
                     SecurityContextHolder.getContext().authentication = authentication
+                }
+                .onFailure { exception ->
+                    when (exception) {
+                        is ExpiredJwtException -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired")
+                        }
+
+                        else -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token")
+                        }
+                    }
+
+                    return
                 }
         }
 
