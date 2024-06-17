@@ -4,8 +4,8 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportResponse
+import team.sparta.onehouronemeal.domain.comment.model.v1.CommentStatus
 import team.sparta.onehouronemeal.domain.comment.model.v1.report.ReportStatus
-import team.sparta.onehouronemeal.domain.comment.repository.v1.CommentRepository
 import team.sparta.onehouronemeal.domain.comment.repository.v1.report.ReportRepository
 import team.sparta.onehouronemeal.domain.course.dto.v1.PendingCourseResponse
 import team.sparta.onehouronemeal.domain.course.model.v1.CourseStatus
@@ -20,7 +20,6 @@ class AdminService(
     private val userRepository: UserRepository,
     private val courseRepository: CourseRepository,
     private val reportRepository: ReportRepository,
-    private val commentRepository: CommentRepository,
 ) {
     fun getPendingUserList(): List<UserResponse> {
         return userRepository.findByStatusOrderByCreatedAtDesc(UserStatus.PENDING).map { UserResponse.from(it) }
@@ -74,6 +73,6 @@ class AdminService(
     fun acceptReport(reportId: Long) {
         val report = reportRepository.findByIdOrNull(reportId) ?: throw ModelNotFoundException("report", reportId)
         report.changeStatus(ReportStatus.ACCEPTED)
-        commentRepository.delete(report.comment)
+        report.comment.changeStatus(CommentStatus.BLOCKED)
     }
 }
