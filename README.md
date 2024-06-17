@@ -65,11 +65,11 @@
 
 ## :handshake: <strong>협업 도구</strong>
 
-<img alt="Git" src="https://img.shields.io/badge/Git-F05032?style=plastic&logo=git&logoColor=white"/>
+<img alt="Git" src="https://img.shields.io/badge/Git-F05032?style=flat-squre&logo=git&logoColor=white"/>
 
-<img alt="GitHub" src="https://img.shields.io/badge/GitHub-181717?style=plastic&logo=github&logoColor=white"/>
+<img alt="GitHub" src="https://img.shields.io/badge/GitHub-181717?style=flat-squre&logo=github&logoColor=white"/>
 
-<img alt="Slack" src="https://img.shields.io/badge/Slack-4A154B?style=plastic&logo=slack&logoColor=white"/>
+<img alt="Slack" src="https://img.shields.io/badge/Slack-4A154B?style=flat-squre&logo=slack&logoColor=white"/>
 
 ## :cocktail: <strong>Event storming</strong>
 
@@ -151,7 +151,6 @@
 ## :clipboard: 이번 프로젝트에서 협업시 좋았던 점
 
 
-
 <br/>
 
 ## :gun: 트러블 슈팅
@@ -159,9 +158,6 @@
 <br/>
 
 ## :pushpin: 환경설정
-
-맘에 드는 뱃지 모양을 골라주세요 (1. Kotlin, Intellij -> plastic, 2.Eclipse Temurin -> for-the-badge, 3. Spring Boot, jjwt ->
-flat-squre )
 
 |           |                                                             Tool & Version                                                             |
 |:---------:|:--------------------------------------------------------------------------------------------------------------------------------------:|
