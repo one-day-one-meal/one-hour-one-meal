@@ -59,6 +59,7 @@ class UserService(
     fun signIn(request: SignInRequest): SignInResponse {
         return userRepository.findByUsername(request.username)
             ?.also { check(passwordEncoder.matches(request.password, it.password)) { "Password not matched" } }
+            ?.also { check(it.isActive()) { throw AccessDeniedException("가입 승인이 되지 않았습니다.") } }
             ?.let {
                 val response = SignInResponse.from(jwtPlugin, it)
                 refreshTokenService.updateRefreshToken(response.refreshToken, it)

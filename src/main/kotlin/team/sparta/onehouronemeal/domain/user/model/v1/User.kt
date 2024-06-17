@@ -1,6 +1,14 @@
 package team.sparta.onehouronemeal.domain.user.model.v1
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import jakarta.validation.constraints.Size
 import team.sparta.onehouronemeal.domain.common.BaseTimeEntity
 
@@ -62,6 +70,10 @@ class User(
         this.status = status
 
         this.validate()
+    }
+
+    fun isActive(): Boolean {
+        return this.status == UserStatus.ACTIVE
     }
 
     private fun validate() {
