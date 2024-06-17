@@ -28,13 +28,40 @@
 
 ![Picture](https://one-hour-one-eat-photo.s3.ap-northeast-2.amazonaws.com/team_pic.PNG)
 
-| 이름  |  태그  |   MBTI   | 블로그                              | GitHub                        | 한마디!                                                              |
-|:---:|:----:|:--------:|----------------------------------|-------------------------------|-------------------------------------------------------------------|
-| 노재원 | `팀장` |  `ISFP`  | https://velog.io/@mobz/posts     | https://github.com/Mobzzzzz   | 템포가 매일 빨라지는 것 같아요                                                 |
-| 김보현 | `팀원` |  `INTP`  |                                  | https://github.com/ckhcree    | 좋은 에너지로 함께할수 있도록 노력하겠습니다!                                         |
-| 류원형 | `팀원` | `INFJ-A` | https://blog.naver.com/ryu1hyung | https://github.com/1hyung     | 좋은 분들 만난거 같아서 다행입니다. 좋은 관계로 마무리 했으면 좋겠습니다. 코딩은 부족하지만 열심히 따라가겠습니다! |
-| 이무준 | `팀원` |  `INFJ`  | https://moomoo11.tistory.com/    | https://github.com/Moo-moo-11 | 행복합니다 즐겁습니다                                                       |
-| 이수진 | `팀원` |  `INTP`  | https://velog.io/@devssu         | https://github.com/devitssu   | 모두 화이팅                                                            |
+<table align=center>
+    <thead>
+        <tr >
+            <th style="text-align:center;" >노재원</th>
+            <th style="text-align:center;" >류원형</th>
+            <th style="text-align:center;" >이무준</th>
+            <th style="text-align:center;" >이수진</th>
+            <th style="text-align:center;" >김보현</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><img width="160" src="" /> </td>
+            <td><img width="160" src="" /></td>
+            <td><img width="160" src="" /></td>
+            <td><img width="160" src="" /></td>
+            <td><img width="160" src="" /></td>
+        </tr>
+        <tr>
+            <td><a href="https://github.com/Mobzzzzz">@Mobzzzzz</a></td>
+            <td><a href="https://github.com/1hyung">@1hyung</a></td>
+            <td><a href="https://github.com/Moo-moo-11">@Moo-moo-11</a></td>
+            <td><a href="https://github.com/devitssu">@devitssu</a></td>
+            <td><a href="https://github.com/ckhcree">@ckhcree</a></td>
+        </tr>
+        <tr>
+            <td width="160">유저 도메인<br>전반적인<br>인증/인가</td>
+            <td width="160">레시피 도메인<br>쿼리 최적화</td>
+            <td width="160">강좌 도메인<br>쿼리 최적화</td>
+            <td width="160">백오피스 <br>API 및 정책<br>Ngrok + Retools 구축</td>
+            <td width="160">댓글 도메인<br>신고하기<br> Soft delete</td>
+        </tr>
+    </tbody>
+</table>                                                     
 
 ## :handshake: <strong>협업 도구</strong>
 
