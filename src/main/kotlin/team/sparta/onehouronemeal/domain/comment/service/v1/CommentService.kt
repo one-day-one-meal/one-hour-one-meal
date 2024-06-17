@@ -9,7 +9,6 @@ import team.sparta.onehouronemeal.domain.comment.dto.v1.UpdateCommentRequest
 import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportRequest
 import team.sparta.onehouronemeal.domain.comment.dto.v1.report.ReportResponse
 import team.sparta.onehouronemeal.domain.comment.model.v1.Comment
-import team.sparta.onehouronemeal.domain.comment.model.v1.CommentStatus
 import team.sparta.onehouronemeal.domain.comment.model.v1.report.Report
 import team.sparta.onehouronemeal.domain.comment.repository.v1.CommentRepository
 import team.sparta.onehouronemeal.domain.comment.repository.v1.report.ReportRepository
@@ -65,7 +64,6 @@ class CommentService(
         val reports = reportRepository.findAllByCommentId(commentId)
         reportRepository.deleteAll(reports)
 
-        comment.changeStatus(CommentStatus.DELETED)
         commentRepository.delete(comment)
     }
 
