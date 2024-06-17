@@ -148,13 +148,13 @@
 
 <br/>
 
-## :clipboard: 협업시 어려웠던 점
+## :clipboard: 이번 프로젝트에서 협업시 좋았던 점
 
-저는 행복했어요
+
 
 <br/>
 
-## :gun: 트러불 슈팅
+## :gun: 트러블 슈팅
 
 <br/>
 
@@ -165,8 +165,8 @@ flat-squre )
 
 |           |                                                             Tool & Version                                                             |
 |:---------:|:--------------------------------------------------------------------------------------------------------------------------------------:|
-| Language  |              <img src="https://img.shields.io/badge/Kotlin-ver 1.9.24-7F52FF?style=plastic&logo=Kotlin&logoColor=white"/>              |
-|    IDE    |            <img src="https://img.shields.io/badge/Intellij%20IDEA-000000?style=plastic&logo=intellijidea&logoColor=white"/>            |
-|    SDK    | <img src="https://img.shields.io/badge/Eclipse%20Temurin-ver 21.0.2-FF1464?style=for-the-badge&logo=eclipseadoptium&logoColor=white"/> | 
+| Language  |              <img src="https://img.shields.io/badge/Kotlin-ver 1.9.24-7F52FF?style=flat-squre&logo=Kotlin&logoColor=white"/>              |
+|    IDE    |            <img src="https://img.shields.io/badge/Intellij%20IDEA-000000?style=flat-squre&logo=intellijidea&logoColor=white"/>            |
+|    SDK    | <img src="https://img.shields.io/badge/Eclipse%20Temurin-ver 21.0.2-FF1464?style=flat-squre&logo=eclipseadoptium&logoColor=white"/> | 
 | Framework |       <img src="https://img.shields.io/badge/Spring%20Boot-ver 3.3.0-6DB33F?style=flat-squre&logo=springboot&logoColor=white"/>        |
 |    JWT    |         <img src="https://img.shields.io/badge/jjwt-ver 0.12.5-000000?style=flat-square&logo=jsonwebtokens&logoColor=white"/>          |
