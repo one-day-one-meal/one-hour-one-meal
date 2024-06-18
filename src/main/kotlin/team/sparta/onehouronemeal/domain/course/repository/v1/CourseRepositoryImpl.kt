@@ -52,7 +52,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         return queryFactory
             .selectFrom(course)
             .leftJoin(course.user, user).fetchJoin()
-            .where(course.status.eq(CourseStatus.OPEN).and(course.id.eq(courseId)))
+            .where(course.id.eq(courseId))
             .fetchOne()
     }
 
