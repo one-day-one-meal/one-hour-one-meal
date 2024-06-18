@@ -83,7 +83,7 @@
 
 <br/>
 
-## :card_index_dividers: <a href="https://www.notion.so/teamsparta/52aa6f9bca4041ddbaefcf98c7ecaf49?v=3bf460aa67164a36837cf7bec8eb1775"><strong>API 명세서</strong><a/>
+## :card_index_dividers: <a href="https://mobzz.notion.site/045db324b7544836a84a62a95044fa8f?v=2978ceaecb3443d3a5dd906855617fe8&pvs=4"><strong>API 명세서</strong><a/>
 
 ![API Docs](/readme_assets/API_docs.png)
 
