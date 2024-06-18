@@ -71,25 +71,25 @@
 
 <img alt="Slack" src="https://img.shields.io/badge/Slack-4A154B?style=flat-squre&logo=slack&logoColor=white"/>
 
-## :cocktail: <strong>Event storming</strong>
+## :cocktail: <a href="https://www.figma.com/file/ZRu282nkpskBH5tFQ9JyXl?embed_host=notion&kind=file&node-id=0-1&t=cQCnpiGrOAvBaAAM-0&viewer=1"><strong>Event storming</strong></a>
 
 ![Event storming](/readme_assets/event_storming.png)
 
 <br/>
 
-## :cocktail: <strong>Wire frame</strong>
+## :cocktail: <a href="https://www.figma.com/file/ZRu282nkpskBH5tFQ9JyXl?embed_host=notion&kind=file&node-id=0-1&t=cQCnpiGrOAvBaAAM-0&viewer=1"><strong>Wire frame</strong></a>
 
 ![Wire frame](/readme_assets/wire_frame.png)
 
 <br/>
 
-## :card_index_dividers: <strong>API 명세서</strong>
+## :card_index_dividers: <a href="https://www.notion.so/teamsparta/52aa6f9bca4041ddbaefcf98c7ecaf49?v=3bf460aa67164a36837cf7bec8eb1775"><strong>API 명세서</strong><a/>
 
 ![API Docs](/readme_assets/API_docs.png)
 
 <br/>
 
-## :card_file_box: <strong>ERD</strong>
+## :card_file_box: <a href="https://www.erdcloud.com/d/SHSswCscQ7aA4EXzL"><strong>ERD</strong><a/>
 
 ![ERD](/readme_assets/ERD.png)
 
