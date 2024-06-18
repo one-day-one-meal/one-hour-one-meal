@@ -83,9 +83,11 @@
 
 <br/>
 
-## :card_index_dividers: <a href="https://mobzz.notion.site/045db324b7544836a84a62a95044fa8f?v=2978ceaecb3443d3a5dd906855617fe8&pvs=4"><strong>API 명세서</strong><a/>
+## :card_index_dividers: <a href="https://www.notion.so/itssu/6b5405472d5f4178a905a25de2fde906?v=a86b9844434146389c131556ef8932b7&pvs=4"><strong>API 명세서</strong><a/>
 
-![API Docs](/readme_assets/API_docs.png)
+![API Docs2](/readme_assets/API_docs2.png)
+![API Docs2](/readme_assets/API_docs3.png)
+![API Docs2](/readme_assets/API_docs4.png)
 
 <br/>
 
