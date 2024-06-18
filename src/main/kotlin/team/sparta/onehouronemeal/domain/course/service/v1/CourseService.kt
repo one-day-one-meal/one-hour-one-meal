@@ -16,8 +16,8 @@ import team.sparta.onehouronemeal.domain.course.repository.v1.CourseRepository
 import team.sparta.onehouronemeal.domain.course.repository.v1.thumbsup.ThumbsUpRepository
 import team.sparta.onehouronemeal.domain.recipe.dto.v1.RecipeResponse
 import team.sparta.onehouronemeal.domain.recipe.repository.v1.RecipeRepository
+import team.sparta.onehouronemeal.domain.user.model.v1.UserRole
 import team.sparta.onehouronemeal.domain.user.repository.v1.UserRepository
-import team.sparta.onehouronemeal.domain.user.repository.v1.subscription.SubscriptionRepository
 import team.sparta.onehouronemeal.exception.AccessDeniedException
 import team.sparta.onehouronemeal.exception.ModelNotFoundException
 import team.sparta.onehouronemeal.infra.security.UserPrincipal
@@ -28,7 +28,6 @@ class CourseService(
     private val userRepository: UserRepository,
     private val thumbsUpRepository: ThumbsUpRepository,
     private val recipeRepository: RecipeRepository,
-    private val subscriptionRepository: SubscriptionRepository,
     private val commentRepository: CommentRepository
 ) {
 
@@ -65,6 +64,8 @@ class CourseService(
 
     fun createCourse(principal: UserPrincipal, request: CreateCourseRequest): CourseResponse {
         val user = userRepository.findById(principal.id) ?: throw ModelNotFoundException("User", principal.id)
+
+        if (user.role != UserRole.CHEF && user.role != UserRole.ADMIN) throw AccessDeniedException("You are not a chef or admin")
 
         val course = Course(
             title = request.title, describe = request.describe, user = user
